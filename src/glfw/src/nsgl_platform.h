@@ -1,7 +1,7 @@
 //========================================================================
-// GLFW 3.1 Linux - www.glfw.org
+// GLFW 3.0 OS X - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2014 Jonas Ådahl <jadahl@gmail.com>
+// Copyright (c) 2009-2010 Camilla Berglund <elmindreda@elmindreda.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -24,11 +24,13 @@
 //
 //========================================================================
 
-#ifndef _linux_joystick_h_
-#define _linux_joystick_h_
+#ifndef _nsgl_platform_h_
+#define _nsgl_platform_h_
 
-#define _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE \
-    _GLFWjoystickLinux linux_js[GLFW_JOYSTICK_LAST + 1]
+
+#define _GLFW_PLATFORM_FBCONFIG
+#define _GLFW_PLATFORM_CONTEXT_STATE        _GLFWcontextNSGL nsgl
+#define _GLFW_PLATFORM_LIBRARY_OPENGL_STATE _GLFWlibraryNSGL nsgl
 
 
 //========================================================================
@@ -36,25 +38,27 @@
 //========================================================================
 
 //------------------------------------------------------------------------
-// Platform-specific joystick structure
+// Platform-specific OpenGL context structure
 //------------------------------------------------------------------------
-typedef struct _GLFWjoystickLinux
+typedef struct _GLFWcontextNSGL
 {
-    int             present;
-    int             fd;
-    float*          axes;
-    int             axisCount;
-    unsigned char*  buttons;
-    int             buttonCount;
-    char*           name;
-} _GLFWjoystickLinux;
+    id           pixelFormat;
+    id	         context;
+} _GLFWcontextNSGL;
 
 
-//========================================================================
-// Prototypes for platform specific internal functions
-//========================================================================
+//------------------------------------------------------------------------
+// Platform-specific library global data for NSGL
+//------------------------------------------------------------------------
+typedef struct _GLFWlibraryNSGL
+{
+    // dlopen handle for dynamically loading OpenGL extension entry points
+    void*           framework;
 
-void _glfwInitJoysticks(void);
-void _glfwTerminateJoysticks(void);
+    // TLS key for per-thread current context/window
+    pthread_key_t   current;
 
-#endif // _linux_joystick_h_
+} _GLFWlibraryNSGL;
+
+
+#endif // _nsgl_platform_h_

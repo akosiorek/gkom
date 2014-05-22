@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.1 - www.glfw.org
+// GLFW 3.0 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -156,10 +156,6 @@ GLFWAPI void glfwTerminate(void)
     while (_glfw.windowListHead)
         glfwDestroyWindow((GLFWwindow*) _glfw.windowListHead);
 
-    // Destroy all cursors
-    while (_glfw.cursorListHead)
-        glfwDestroyCursor((GLFWcursor*) _glfw.cursorListHead);
-
     for (i = 0;  i < _glfw.monitorCount;  i++)
     {
         _GLFWmonitor* monitor = _glfw.monitors[i];
@@ -167,7 +163,7 @@ GLFWAPI void glfwTerminate(void)
             _glfwPlatformSetGammaRamp(monitor, &monitor->originalRamp);
     }
 
-    _glfwFreeMonitors(_glfw.monitors, _glfw.monitorCount);
+    _glfwDestroyMonitors(_glfw.monitors, _glfw.monitorCount);
     _glfw.monitors = NULL;
     _glfw.monitorCount = 0;
 

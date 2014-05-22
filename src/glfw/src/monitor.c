@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.1 - www.glfw.org
+// GLFW 3.0 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -30,6 +30,11 @@
 #include <string.h>
 #include <stdlib.h>
 #include <limits.h>
+
+#if defined(_MSC_VER)
+ #include <malloc.h>
+ #define strdup _strdup
+#endif
 
 
 // Lexical comparison function for GLFW video modes, used by qsort
@@ -108,7 +113,7 @@ void _glfwInputMonitorChange(void)
         {
             if (_glfwPlatformIsSameMonitor(_glfw.monitors[i], monitors[j]))
             {
-                _glfwFreeMonitor(_glfw.monitors[i]);
+                _glfwDestroyMonitor(_glfw.monitors[i]);
                 _glfw.monitors[i] = monitors[j];
                 break;
             }
@@ -162,7 +167,7 @@ void _glfwInputMonitorChange(void)
             _glfw.callbacks.monitor((GLFWmonitor*) _glfw.monitors[i], GLFW_CONNECTED);
     }
 
-    _glfwFreeMonitors(monitors, monitorCount);
+    _glfwDestroyMonitors(monitors, monitorCount);
 }
 
 
@@ -170,7 +175,7 @@ void _glfwInputMonitorChange(void)
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-_GLFWmonitor* _glfwAllocMonitor(const char* name, int widthMM, int heightMM)
+_GLFWmonitor* _glfwCreateMonitor(const char* name, int widthMM, int heightMM)
 {
     _GLFWmonitor* monitor = calloc(1, sizeof(_GLFWmonitor));
     monitor->name = strdup(name);
@@ -180,7 +185,7 @@ _GLFWmonitor* _glfwAllocMonitor(const char* name, int widthMM, int heightMM)
     return monitor;
 }
 
-void _glfwFreeMonitor(_GLFWmonitor* monitor)
+void _glfwDestroyMonitor(_GLFWmonitor* monitor)
 {
     if (monitor == NULL)
         return;
@@ -193,12 +198,12 @@ void _glfwFreeMonitor(_GLFWmonitor* monitor)
     free(monitor);
 }
 
-void _glfwFreeMonitors(_GLFWmonitor** monitors, int count)
+void _glfwDestroyMonitors(_GLFWmonitor** monitors, int count)
 {
     int i;
 
     for (i = 0;  i < count;  i++)
-        _glfwFreeMonitor(monitors[i]);
+        _glfwDestroyMonitor(monitors[i]);
 
     free(monitors);
 }
@@ -295,25 +300,13 @@ GLFWAPI GLFWmonitor* glfwGetPrimaryMonitor(void)
 GLFWAPI void glfwGetMonitorPos(GLFWmonitor* handle, int* xpos, int* ypos)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
-
-    if (xpos)
-        *xpos = 0;
-    if (ypos)
-        *ypos = 0;
-
     _GLFW_REQUIRE_INIT();
-
     _glfwPlatformGetMonitorPos(monitor, xpos, ypos);
 }
 
 GLFWAPI void glfwGetMonitorPhysicalSize(GLFWmonitor* handle, int* width, int* height)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
-
-    if (width)
-        *width = 0;
-    if (height)
-        *height = 0;
 
     _GLFW_REQUIRE_INIT();
 

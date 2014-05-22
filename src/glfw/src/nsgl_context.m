@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.1 OS X - www.glfw.org
+// GLFW 3.0 OS X - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2009-2010 Camilla Berglund <elmindreda@elmindreda.org>
 //
@@ -26,6 +26,8 @@
 
 #include "internal.h"
 
+#include <pthread.h>
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
@@ -35,8 +37,12 @@
 //
 int _glfwInitContextAPI(void)
 {
-    if (!_glfwInitTLS())
+    if (pthread_key_create(&_glfw.nsgl.current, NULL) != 0)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "NSGL: Failed to create context TLS");
         return GL_FALSE;
+    }
 
     _glfw.nsgl.framework =
         CFBundleGetBundleWithIdentifier(CFSTR("com.apple.opengl"));
@@ -54,13 +60,13 @@ int _glfwInitContextAPI(void)
 //
 void _glfwTerminateContextAPI(void)
 {
-    _glfwTerminateTLS();
+    pthread_key_delete(_glfw.nsgl.current);
 }
 
 // Create the OpenGL context
 //
 int _glfwCreateContext(_GLFWwindow* window,
-                       const _GLFWctxconfig* ctxconfig,
+                       const _GLFWwndconfig* wndconfig,
                        const _GLFWfbconfig* fbconfig)
 {
     unsigned int attributeCount = 0;
@@ -72,7 +78,7 @@ int _glfwCreateContext(_GLFWwindow* window,
     else if (colorBits < 15)
         colorBits = 15;
 
-    if (ctxconfig->api == GLFW_OPENGL_ES_API)
+    if (wndconfig->clientAPI == GLFW_OPENGL_ES_API)
     {
         _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                         "NSGL: This API does not support OpenGL ES");
@@ -80,7 +86,7 @@ int _glfwCreateContext(_GLFWwindow* window,
     }
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
-    if (ctxconfig->major == 3 && ctxconfig->minor < 2)
+    if (wndconfig->glMajor == 3 && wndconfig->glMinor < 2)
     {
         _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                         "NSGL: The targeted version of OS X does not "
@@ -88,9 +94,9 @@ int _glfwCreateContext(_GLFWwindow* window,
         return GL_FALSE;
     }
 
-    if (ctxconfig->major > 2)
+    if (wndconfig->glMajor > 2)
     {
-        if (!ctxconfig->forward)
+        if (!wndconfig->glForward)
         {
             _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                             "NSGL: The targeted version of OS X only "
@@ -99,7 +105,7 @@ int _glfwCreateContext(_GLFWwindow* window,
             return GL_FALSE;
         }
 
-        if (ctxconfig->profile != GLFW_OPENGL_CORE_PROFILE)
+        if (wndconfig->glProfile != GLFW_OPENGL_CORE_PROFILE)
         {
             _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                             "NSGL: The targeted version of OS X only "
@@ -110,7 +116,7 @@ int _glfwCreateContext(_GLFWwindow* window,
     }
 #else
     // Fail if OpenGL 3.0 or above was requested
-    if (ctxconfig->major > 2)
+    if (wndconfig->glMajor > 2)
     {
         _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                         "NSGL: The targeted version of OS X does not "
@@ -120,7 +126,7 @@ int _glfwCreateContext(_GLFWwindow* window,
 #endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
 
     // Fail if a robustness strategy was requested
-    if (ctxconfig->robustness)
+    if (wndconfig->glRobustness)
     {
         _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                         "NSGL: OS X does not support OpenGL robustness "
@@ -138,7 +144,7 @@ int _glfwCreateContext(_GLFWwindow* window,
     ADD_ATTR(NSOpenGLPFAClosestPolicy);
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
-    if (ctxconfig->major > 2)
+    if (wndconfig->glMajor > 2)
         ADD_ATTR2(NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core);
 #endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
 
@@ -190,8 +196,8 @@ int _glfwCreateContext(_GLFWwindow* window,
 
     NSOpenGLContext* share = NULL;
 
-    if (ctxconfig->share)
-        share = ctxconfig->share->nsgl.context;
+    if (wndconfig->share)
+        share = wndconfig->share->nsgl.context;
 
     window->nsgl.context =
         [[NSOpenGLContext alloc] initWithFormat:window->nsgl.pixelFormat
@@ -229,7 +235,12 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
     else
         [NSOpenGLContext clearCurrentContext];
 
-    _glfwSetCurrentContext(window);
+    pthread_setspecific(_glfw.nsgl.current, window);
+}
+
+_GLFWwindow* _glfwPlatformGetCurrentContext(void)
+{
+    return (_GLFWwindow*) pthread_getspecific(_glfw.nsgl.current);
 }
 
 void _glfwPlatformSwapBuffers(_GLFWwindow* window)

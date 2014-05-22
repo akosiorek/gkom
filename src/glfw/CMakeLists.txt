@@ -3,15 +3,15 @@ project(GLFW C)
 cmake_minimum_required(VERSION 2.8)
 
 set(GLFW_VERSION_MAJOR "3")
-set(GLFW_VERSION_MINOR "1")
-set(GLFW_VERSION_PATCH "0")
+set(GLFW_VERSION_MINOR "0")
+set(GLFW_VERSION_PATCH "4")
 set(GLFW_VERSION_EXTRA "")
 set(GLFW_VERSION "${GLFW_VERSION_MAJOR}.${GLFW_VERSION_MINOR}")
 set(GLFW_VERSION_FULL "${GLFW_VERSION}.${GLFW_VERSION_PATCH}${GLFW_VERSION_EXTRA}")
 set(LIB_SUFFIX "" CACHE STRING "Takes an empty string or 64. Directory where lib will be installed: lib or lib64")
 
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
-option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" OFF)
+option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" ON)
 option(GLFW_BUILD_TESTS "Build the GLFW test programs" ON)
 option(GLFW_BUILD_DOCS "Build the GLFW documentation" ON)
 option(GLFW_INSTALL "Generate installation target" ON)
@@ -26,13 +26,8 @@ if (APPLE)
     option(GLFW_BUILD_UNIVERSAL "Build GLFW as a Universal Binary" OFF)
     option(GLFW_USE_CHDIR "Make glfwInit chdir to Contents/Resources" ON)
     option(GLFW_USE_MENUBAR "Populate the menu bar on first window creation" ON)
-    option(GLFW_USE_RETINA "Use the full resolution of Retina displays" ON)
 else()
     option(GLFW_USE_EGL "Use EGL for context creation" OFF)
-endif()
-
-if (UNIX AND NOT APPLE)
-    option(GLFW_USE_WAYLAND "Use Wayland for context creation (implies EGL as well)" OFF)
 endif()
 
 if (MSVC)
@@ -41,10 +36,6 @@ endif()
 
 if (BUILD_SHARED_LIBS)
     set(_GLFW_BUILD_DLL 1)
-endif()
-
-if (GLFW_USE_WAYLAND)
-    set(GLFW_USE_EGL ON)
 endif()
 
 if (GLFW_USE_EGL)
@@ -129,7 +120,7 @@ endif()
 #--------------------------------------------------------------------
 if (WIN32)
     set(_GLFW_WIN32 1)
-    message(STATUS "Using Win32 for window creation")
+    message(STATUS "Using Win32 for window creation") 
 
     if (GLFW_USE_EGL)
         set(_GLFW_EGL 1)
@@ -144,13 +135,8 @@ elseif (APPLE)
     set(_GLFW_NSGL 1)
     message(STATUS "Using NSGL for context creation")
 elseif (UNIX)
-    if (GLFW_USE_WAYLAND)
-        set(_GLFW_WAYLAND 1)
-        message(STATUS "Using Wayland for window creation")
-    else()
-        set(_GLFW_X11 1)
-        message(STATUS "Using X11 for window creation")
-    endif()
+    set(_GLFW_X11 1)
+    message(STATUS "Using X11 for window creation") 
 
     if (GLFW_USE_EGL)
         set(_GLFW_EGL 1)
@@ -167,9 +153,6 @@ endif()
 # Use Win32 for window creation
 #--------------------------------------------------------------------
 if (_GLFW_WIN32)
-
-    set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -lgdi32 -lwinmm")
-
     # The DLL links against winmm; the static library loads it
     # That way, both code paths receive testing
     if (BUILD_SHARED_LIBS)
@@ -188,18 +171,14 @@ if (_GLFW_WIN32)
     # the inclusion of stddef.h (by glfw3.h), which is itself included before
     # win32_platform.h.  We define them here until a saner solution can be found
     # NOTE: MinGW-w64 and Visual C++ do /not/ need this hack.
-    if (${CMAKE_C_COMPILER_ID} STREQUAL "GNU")
-        add_definitions(-DUNICODE -DWINVER=0x0501)
-    endif()
+    add_definitions(-DUNICODE)
+    add_definitions(-DWINVER=0x0501)
 endif()
 
 #--------------------------------------------------------------------
 # Use WGL for context creation
 #--------------------------------------------------------------------
 if (_GLFW_WGL)
-
-    set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -lopengl32")
-
     list(APPEND glfw_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR})
     list(APPEND glfw_LIBRARIES ${OPENGL_gl_LIBRARY})
 endif()
@@ -262,7 +241,7 @@ if (_GLFW_X11)
     # Check for Xkb (X keyboard extension)
     if (NOT X11_Xkb_FOUND)
         message(FATAL_ERROR "The X keyboard extension headers were not found")
-    endif()
+    endif() 
 
     list(APPEND glfw_INCLUDE_DIR ${X11_Xkb_INCLUDE_PATH})
 
@@ -280,33 +259,6 @@ if (_GLFW_X11)
         set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -lm")
     endif()
 
-    # Check for Xcursor
-    if (NOT X11_Xcursor_FOUND)
-        message(FATAL_ERROR "The Xcursor libraries and headers were not found")
-    endif()
-
-    list(APPEND glfw_INCLUDE_DIR ${X11_Xcursor_INCLUDE_PATH})
-    list(APPEND glfw_LIBRARIES ${X11_Xcursor_LIB})
-    set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} xcursor")
-
-endif()
-
-#--------------------------------------------------------------------
-# Use Wayland for window creation
-#--------------------------------------------------------------------
-if (_GLFW_WAYLAND)
-    find_package(Wayland REQUIRED)
-    set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} wayland")
-
-    list(APPEND glfw_INCLUDE_DIRS ${WAYLAND_INCLUDE_DIR})
-    list(APPEND glfw_LIBRARIES ${WAYLAND_LIBRARIES})
-
-    find_library(MATH_LIBRARY m)
-    mark_as_advanced(MATH_LIBRARY)
-    if (MATH_LIBRARY)
-        list(APPEND glfw_LIBRARIES ${MATH_LIBRARY})
-        set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} -lm")
-    endif()
 endif()
 
 #--------------------------------------------------------------------
@@ -355,7 +307,9 @@ if (_GLFW_EGL)
     list(APPEND glfw_INCLUDE_DIRS ${EGL_INCLUDE_DIR})
     list(APPEND glfw_LIBRARIES ${EGL_LIBRARY})
 
-    set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} egl")
+    if (UNIX)
+        set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} egl")
+    endif()
 
     if (_GLFW_USE_OPENGL)
         list(APPEND glfw_LIBRARIES ${OPENGL_gl_LIBRARY})
@@ -377,7 +331,7 @@ endif()
 # Use Cocoa for window creation and NSOpenGL for context creation
 #--------------------------------------------------------------------
 if (_GLFW_COCOA AND _GLFW_NSGL)
-
+        
     if (GLFW_USE_MENUBAR)
         set(_GLFW_USE_MENUBAR 1)
     endif()
@@ -386,17 +340,13 @@ if (_GLFW_COCOA AND _GLFW_NSGL)
         set(_GLFW_USE_CHDIR 1)
     endif()
 
-    if (GLFW_USE_RETINA)
-        set(_GLFW_USE_RETINA 1)
-    endif()
-
     if (GLFW_BUILD_UNIVERSAL)
         message(STATUS "Building GLFW as Universal Binaries")
         set(CMAKE_OSX_ARCHITECTURES i386;x86_64)
     else()
         message(STATUS "Building GLFW only for the native architecture")
     endif()
-
+    
     # Set up library and include paths
     find_library(COCOA_FRAMEWORK Cocoa)
     find_library(IOKIT_FRAMEWORK IOKit)
@@ -433,7 +383,7 @@ endif()
 configure_file(${GLFW_SOURCE_DIR}/docs/Doxyfile.in
                ${GLFW_BINARY_DIR}/docs/Doxyfile @ONLY)
 
-configure_file(${GLFW_SOURCE_DIR}/src/glfw_config.h.in
+configure_file(${GLFW_SOURCE_DIR}/src/glfw_config.h.in 
                ${GLFW_BINARY_DIR}/src/glfw_config.h @ONLY)
 
 configure_file(${GLFW_SOURCE_DIR}/src/glfwConfig.cmake.in
@@ -442,8 +392,10 @@ configure_file(${GLFW_SOURCE_DIR}/src/glfwConfig.cmake.in
 configure_file(${GLFW_SOURCE_DIR}/src/glfwConfigVersion.cmake.in
                ${GLFW_BINARY_DIR}/src/glfwConfigVersion.cmake @ONLY)
 
-configure_file(${GLFW_SOURCE_DIR}/src/glfw3.pc.in
-                ${GLFW_BINARY_DIR}/src/glfw3.pc @ONLY)
+if (UNIX)
+    configure_file(${GLFW_SOURCE_DIR}/src/glfw3.pc.in
+                   ${GLFW_BINARY_DIR}/src/glfw3.pc @ONLY)
+endif()
 
 #--------------------------------------------------------------------
 # Add subdirectories
@@ -467,16 +419,18 @@ endif()
 # The library is installed by src/CMakeLists.txt
 #--------------------------------------------------------------------
 if (GLFW_INSTALL)
-    install(DIRECTORY include/GLFW DESTINATION include
+    install(DIRECTORY include/GLFW DESTINATION include 
             FILES_MATCHING PATTERN glfw3.h PATTERN glfw3native.h)
 
     install(FILES ${GLFW_BINARY_DIR}/src/glfwConfig.cmake
                   ${GLFW_BINARY_DIR}/src/glfwConfigVersion.cmake
             DESTINATION lib${LIB_SUFFIX}/cmake/glfw)
 
-    install(EXPORT glfwTargets DESTINATION lib${LIB_SUFFIX}/cmake/glfw)
-    install(FILES ${GLFW_BINARY_DIR}/src/glfw3.pc
-            DESTINATION lib${LIB_SUFFIX}/pkgconfig)
+    if (UNIX)
+        install(EXPORT glfwTargets DESTINATION lib${LIB_SUFFIX}/cmake/glfw)
+        install(FILES ${GLFW_BINARY_DIR}/src/glfw3.pc
+                DESTINATION lib${LIB_SUFFIX}/pkgconfig)
+    endif()
 
     # Only generate this target if no higher-level project already has
     if (NOT TARGET uninstall)

@@ -1,8 +1,7 @@
 //========================================================================
-// GLFW 3.1 Win32 - www.glfw.org
+// GLFW 3.0 OS X - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) 2009-2010 Camilla Berglund <elmindreda@elmindreda.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -27,34 +26,30 @@
 
 #include "internal.h"
 
+#include <mach/mach_time.h>
+
+
+// Return raw time
+//
+static uint64_t getRawTime(void)
+{
+    return mach_absolute_time();
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-int _glfwInitTLS(void)
+// Initialise timer
+//
+void _glfwInitTimer(void)
 {
-    _glfw.win32_tls.context = TlsAlloc();
-    if (_glfw.win32_tls.context == TLS_OUT_OF_INDEXES)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Win32: Failed to allocate TLS index");
-        return GL_FALSE;
-    }
+    mach_timebase_info_data_t info;
+    mach_timebase_info(&info);
 
-    _glfw.win32_tls.allocated = GL_TRUE;
-    return GL_TRUE;
-}
-
-void _glfwTerminateTLS(void)
-{
-    if (_glfw.win32_tls.allocated)
-        TlsFree(_glfw.win32_tls.context);
-}
-
-void _glfwSetCurrentContext(_GLFWwindow* context)
-{
-    TlsSetValue(_glfw.win32_tls.context, context);
+    _glfw.ns.timer.resolution = (double) info.numer / (info.denom * 1.0e9);
+    _glfw.ns.timer.base = getRawTime();
 }
 
 
@@ -62,8 +57,15 @@ void _glfwSetCurrentContext(_GLFWwindow* context)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-_GLFWwindow* _glfwPlatformGetCurrentContext(void)
+double _glfwPlatformGetTime(void)
 {
-    return TlsGetValue(_glfw.win32_tls.context);
+    return (double) (getRawTime() - _glfw.ns.timer.base) *
+        _glfw.ns.timer.resolution;
+}
+
+void _glfwPlatformSetTime(double time)
+{
+    _glfw.ns.timer.base = getRawTime() -
+        (uint64_t) (time / _glfw.ns.timer.resolution);
 }
 

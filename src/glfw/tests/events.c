@@ -41,24 +41,11 @@
 
 #include "getopt.h"
 
+// These must match the input mode defaults
+static GLboolean closeable = GL_TRUE;
+
 // Event index
 static unsigned int counter = 0;
-
-typedef struct
-{
-    GLFWwindow* window;
-    int number;
-    int closeable;
-} Slot;
-
-static void usage(void)
-{
-    printf("Usage: events [-f] [-h] [-n WINDOWS]\n");
-    printf("Options:\n");
-    printf("  -f use full screen\n");
-    printf("  -h show this help\n");
-    printf("  -n the number of windows to create\n");
-}
 
 static const char* get_key_name(int key)
 {
@@ -261,70 +248,72 @@ static void error_callback(int error, const char* description)
 
 static void window_pos_callback(GLFWwindow* window, int x, int y)
 {
-    Slot* slot = glfwGetWindowUserPointer(window);
-    printf("%08x to %i at %0.3f: Window position: %i %i\n",
-           counter++, slot->number, glfwGetTime(), x, y);
+    printf("%08x at %0.3f: Window position: %i %i\n",
+           counter++,
+           glfwGetTime(),
+           x,
+           y);
 }
 
 static void window_size_callback(GLFWwindow* window, int width, int height)
 {
-    Slot* slot = glfwGetWindowUserPointer(window);
-    printf("%08x to %i at %0.3f: Window size: %i %i\n",
-           counter++, slot->number, glfwGetTime(), width, height);
+    printf("%08x at %0.3f: Window size: %i %i\n",
+           counter++,
+           glfwGetTime(),
+           width,
+           height);
 }
 
 static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    Slot* slot = glfwGetWindowUserPointer(window);
-    printf("%08x to %i at %0.3f: Framebuffer size: %i %i\n",
-           counter++, slot->number, glfwGetTime(), width, height);
+    printf("%08x at %0.3f: Framebuffer size: %i %i\n",
+           counter++,
+           glfwGetTime(),
+           width,
+           height);
 
     glViewport(0, 0, width, height);
 }
 
 static void window_close_callback(GLFWwindow* window)
 {
-    Slot* slot = glfwGetWindowUserPointer(window);
-    printf("%08x to %i at %0.3f: Window close\n",
-           counter++, slot->number, glfwGetTime());
+    printf("%08x at %0.3f: Window close\n", counter++, glfwGetTime());
 
-    glfwSetWindowShouldClose(window, slot->closeable);
+    glfwSetWindowShouldClose(window, closeable);
 }
 
 static void window_refresh_callback(GLFWwindow* window)
 {
-    Slot* slot = glfwGetWindowUserPointer(window);
-    printf("%08x to %i at %0.3f: Window refresh\n",
-           counter++, slot->number, glfwGetTime());
+    printf("%08x at %0.3f: Window refresh\n", counter++, glfwGetTime());
 
-    glfwMakeContextCurrent(window);
-    glClear(GL_COLOR_BUFFER_BIT);
-    glfwSwapBuffers(window);
+    if (glfwGetCurrentContext())
+    {
+        glClear(GL_COLOR_BUFFER_BIT);
+        glfwSwapBuffers(window);
+    }
 }
 
 static void window_focus_callback(GLFWwindow* window, int focused)
 {
-    Slot* slot = glfwGetWindowUserPointer(window);
-    printf("%08x to %i at %0.3f: Window %s\n",
-           counter++, slot->number, glfwGetTime(),
+    printf("%08x at %0.3f: Window %s\n",
+           counter++,
+           glfwGetTime(),
            focused ? "focused" : "defocused");
 }
 
 static void window_iconify_callback(GLFWwindow* window, int iconified)
 {
-    Slot* slot = glfwGetWindowUserPointer(window);
-    printf("%08x to %i at %0.3f: Window was %s\n",
-           counter++, slot->number, glfwGetTime(),
+    printf("%08x at %0.3f: Window was %s\n",
+           counter++,
+           glfwGetTime(),
            iconified ? "iconified" : "restored");
 }
 
 static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
-    Slot* slot = glfwGetWindowUserPointer(window);
     const char* name = get_button_name(button);
 
-    printf("%08x to %i at %0.3f: Mouse button %i",
-           counter++, slot->number, glfwGetTime(), button);
+    printf("%08x at %0.3f: Mouse button %i", counter++, glfwGetTime(), button);
 
     if (name)
         printf(" (%s)", name);
@@ -337,33 +326,28 @@ static void mouse_button_callback(GLFWwindow* window, int button, int action, in
 
 static void cursor_position_callback(GLFWwindow* window, double x, double y)
 {
-    Slot* slot = glfwGetWindowUserPointer(window);
-    printf("%08x to %i at %0.3f: Cursor position: %f %f\n",
-           counter++, slot->number, glfwGetTime(), x, y);
+    printf("%08x at %0.3f: Cursor position: %f %f\n", counter++, glfwGetTime(), x, y);
 }
 
 static void cursor_enter_callback(GLFWwindow* window, int entered)
 {
-    Slot* slot = glfwGetWindowUserPointer(window);
-    printf("%08x to %i at %0.3f: Cursor %s window\n",
-           counter++, slot->number, glfwGetTime(),
+    printf("%08x at %0.3f: Cursor %s window\n",
+           counter++,
+           glfwGetTime(),
            entered ? "entered" : "left");
 }
 
 static void scroll_callback(GLFWwindow* window, double x, double y)
 {
-    Slot* slot = glfwGetWindowUserPointer(window);
-    printf("%08x to %i at %0.3f: Scroll: %0.3f %0.3f\n",
-           counter++, slot->number, glfwGetTime(), x, y);
+    printf("%08x at %0.3f: Scroll: %0.3f %0.3f\n", counter++, glfwGetTime(), x, y);
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     const char* name = get_key_name(key);
-    Slot* slot = glfwGetWindowUserPointer(window);
 
-    printf("%08x to %i at %0.3f: Key 0x%04x Scancode 0x%04x",
-           counter++, slot->number, glfwGetTime(), key, scancode);
+    printf("%08x at %0.3f: Key 0x%04x Scancode 0x%04x",
+           counter++, glfwGetTime(), key, scancode);
 
     if (name)
         printf(" (%s)", name);
@@ -380,9 +364,9 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     {
         case GLFW_KEY_C:
         {
-            slot->closeable = !slot->closeable;
+            closeable = !closeable;
 
-            printf("(( closing %s ))\n", slot->closeable ? "enabled" : "disabled");
+            printf("(( closing %s ))\n", closeable ? "enabled" : "disabled");
             break;
         }
     }
@@ -390,22 +374,11 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 static void char_callback(GLFWwindow* window, unsigned int codepoint)
 {
-    Slot* slot = glfwGetWindowUserPointer(window);
-    printf("%08x to %i at %0.3f: Character 0x%08x (%s) input\n",
-           counter++, slot->number, glfwGetTime(), codepoint,
+    printf("%08x at %0.3f: Character 0x%08x (%s) input\n",
+           counter++,
+           glfwGetTime(),
+           codepoint,
            get_character_string(codepoint));
-}
-
-static void drop_callback(GLFWwindow* window, int count, const char** names)
-{
-    int i;
-    Slot* slot = glfwGetWindowUserPointer(window);
-
-    printf("%08x to %i at %0.3f: Drop input\n",
-           counter++, slot->number, glfwGetTime());
-
-    for (i = 0;  i < count;  i++)
-        printf("  %i: \"%s\"\n", i, names[i]);
 }
 
 void monitor_callback(GLFWmonitor* monitor, int event)
@@ -437,9 +410,9 @@ void monitor_callback(GLFWmonitor* monitor, int event)
 
 int main(int argc, char** argv)
 {
-    Slot* slots;
+    GLFWwindow* window;
     GLFWmonitor* monitor = NULL;
-    int ch, i, width, height, count = 1;
+    int ch, width, height;
 
     setlocale(LC_ALL, "");
 
@@ -450,128 +423,57 @@ int main(int argc, char** argv)
 
     printf("Library initialized\n");
 
-    glfwSetMonitorCallback(monitor_callback);
-
-    while ((ch = getopt(argc, argv, "hfn:")) != -1)
+    while ((ch = getopt(argc, argv, "f")) != -1)
     {
         switch (ch)
         {
-            case 'h':
-                usage();
-                exit(EXIT_SUCCESS);
-
             case 'f':
                 monitor = glfwGetPrimaryMonitor();
                 break;
-
-            case 'n':
-                count = (int) strtol(optarg, NULL, 10);
-                break;
-
-            default:
-                usage();
-                exit(EXIT_FAILURE);
         }
     }
 
-    if (monitor)
+    window = glfwCreateWindow(640, 480, "Event Linter", monitor, NULL);
+    if (!window)
     {
-        const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-
-        glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
-        glfwWindowHint(GLFW_RED_BITS, mode->redBits);
-        glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
-        glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
-
-        width = mode->width;
-        height = mode->height;
-    }
-    else
-    {
-        width  = 640;
-        height = 480;
-    }
-
-    if (!count)
-    {
-        fprintf(stderr, "Invalid user\n");
+        glfwTerminate();
         exit(EXIT_FAILURE);
     }
 
-    slots = calloc(count, sizeof(Slot));
+    printf("Window opened\n");
 
-    for (i = 0;  i < count;  i++)
-    {
-        char title[128];
+    glfwSetMonitorCallback(monitor_callback);
 
-        slots[i].closeable = GL_TRUE;
-        slots[i].number = i + 1;
+    glfwSetWindowPosCallback(window, window_pos_callback);
+    glfwSetWindowSizeCallback(window, window_size_callback);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetWindowCloseCallback(window, window_close_callback);
+    glfwSetWindowRefreshCallback(window, window_refresh_callback);
+    glfwSetWindowFocusCallback(window, window_focus_callback);
+    glfwSetWindowIconifyCallback(window, window_iconify_callback);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
+    glfwSetCursorPosCallback(window, cursor_position_callback);
+    glfwSetCursorEnterCallback(window, cursor_enter_callback);
+    glfwSetScrollCallback(window, scroll_callback);
+    glfwSetKeyCallback(window, key_callback);
+    glfwSetCharCallback(window, char_callback);
 
-        sprintf(title, "Event Linter (Window %i)", slots[i].number);
+    glfwMakeContextCurrent(window);
+    glfwSwapInterval(1);
 
-        if (monitor)
-        {
-            printf("Creating full screen window %i (%ix%i on %s)\n",
-                   slots[i].number,
-                   width, height,
-                   glfwGetMonitorName(monitor));
-        }
-        else
-        {
-            printf("Creating windowed mode window %i (%ix%i)\n",
-                   slots[i].number,
-                   width, height);
-        }
-
-        slots[i].window = glfwCreateWindow(width, height, title, monitor, NULL);
-        if (!slots[i].window)
-        {
-            free(slots);
-            glfwTerminate();
-            exit(EXIT_FAILURE);
-        }
-
-        glfwSetWindowUserPointer(slots[i].window, slots + i);
-
-        glfwSetWindowPosCallback(slots[i].window, window_pos_callback);
-        glfwSetWindowSizeCallback(slots[i].window, window_size_callback);
-        glfwSetFramebufferSizeCallback(slots[i].window, framebuffer_size_callback);
-        glfwSetWindowCloseCallback(slots[i].window, window_close_callback);
-        glfwSetWindowRefreshCallback(slots[i].window, window_refresh_callback);
-        glfwSetWindowFocusCallback(slots[i].window, window_focus_callback);
-        glfwSetWindowIconifyCallback(slots[i].window, window_iconify_callback);
-        glfwSetMouseButtonCallback(slots[i].window, mouse_button_callback);
-        glfwSetCursorPosCallback(slots[i].window, cursor_position_callback);
-        glfwSetCursorEnterCallback(slots[i].window, cursor_enter_callback);
-        glfwSetScrollCallback(slots[i].window, scroll_callback);
-        glfwSetKeyCallback(slots[i].window, key_callback);
-        glfwSetCharCallback(slots[i].window, char_callback);
-        glfwSetDropCallback(slots[i].window, drop_callback);
-
-        glfwMakeContextCurrent(slots[i].window);
-        glfwSwapInterval(1);
-    }
+    glfwGetWindowSize(window, &width, &height);
+    printf("Window size should be %ix%i\n", width, height);
 
     printf("Main loop starting\n");
 
-    for (;;)
+    while (!glfwWindowShouldClose(window))
     {
-        for (i = 0;  i < count;  i++)
-        {
-            if (glfwWindowShouldClose(slots[i].window))
-                break;
-        }
-
-        if (i < count)
-            break;
-
         glfwWaitEvents();
 
         // Workaround for an issue with msvcrt and mintty
         fflush(stdout);
     }
 
-    free(slots);
     glfwTerminate();
     exit(EXIT_SUCCESS);
 }

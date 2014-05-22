@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.1 X11 - www.glfw.org
+// GLFW 3.0 X11 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2010 Camilla Berglund <elmindreda@elmindreda.org>
 //
@@ -38,22 +38,27 @@
 //
 void _glfwInitGammaRamp(void)
 {
-    if (_glfw.x11.randr.available)
+    // RandR gamma support is only available with version 1.2 and above
+    if (_glfw.x11.randr.available &&
+        (_glfw.x11.randr.versionMajor > 1 ||
+         (_glfw.x11.randr.versionMajor == 1 &&
+          _glfw.x11.randr.versionMinor >= 2)))
     {
-        XRRScreenResources* sr = XRRGetScreenResources(_glfw.x11.display,
+        // FIXME: Assumes that all monitors have the same size gamma tables
+        // This is reasonable as I suspect the that if they did differ, it
+        // would imply that setting the gamma size to an arbitary size is
+        // possible as well.
+        XRRScreenResources* rr = XRRGetScreenResources(_glfw.x11.display,
                                                        _glfw.x11.root);
 
-        if (!sr->ncrtc || !XRRGetCrtcGammaSize(_glfw.x11.display, sr->crtcs[0]))
+        if (XRRGetCrtcGammaSize(_glfw.x11.display, rr->crtcs[0]) == 0)
         {
-            // This is either a headless system or an older Nvidia binary driver
-            // with broken gamma support
-            // Flag it as useless and fall back to Xf86VidMode, if available
-            _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "X11: RandR gamma ramp support seems broken");
+            // This is probably older Nvidia RandR with broken gamma support
+            // Flag it as useless and try Xf86VidMode below, if available
             _glfw.x11.randr.gammaBroken = GL_TRUE;
         }
 
-        XRRFreeScreenResources(sr);
+        XRRFreeScreenResources(rr);
     }
 }
 

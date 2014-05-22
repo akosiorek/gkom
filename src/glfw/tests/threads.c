@@ -53,7 +53,7 @@ static void error_callback(int error, const char* description)
 
 static int thread_main(void* data)
 {
-    const Thread* thread = data;
+    const Thread* thread = (const Thread*) data;
 
     glfwMakeContextCurrent(thread->window);
     glfwSwapInterval(1);
@@ -123,9 +123,6 @@ int main(void)
                 running = GL_FALSE;
         }
     }
-
-    for (i = 0;  i < count;  i++)
-        glfwHideWindow(threads[i].window);
 
     for (i = 0;  i < count;  i++)
         thrd_join(threads[i].id, &result);

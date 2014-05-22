@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.1 POSIX - www.glfw.org
+// GLFW 3.0 X11 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -30,12 +30,13 @@
 #include <sys/time.h>
 #include <time.h>
 
+
 // Return raw time
 //
 static uint64_t getRawTime(void)
 {
 #if defined(CLOCK_MONOTONIC)
-    if (_glfw.posix_time.monotonic)
+    if (_glfw.x11.timer.monotonic)
     {
         struct timespec ts;
 
@@ -66,16 +67,16 @@ void _glfwInitTimer(void)
 
     if (clock_gettime(CLOCK_MONOTONIC, &ts) == 0)
     {
-        _glfw.posix_time.monotonic = GL_TRUE;
-        _glfw.posix_time.resolution = 1e-9;
+        _glfw.x11.timer.monotonic = GL_TRUE;
+        _glfw.x11.timer.resolution = 1e-9;
     }
     else
 #endif
     {
-        _glfw.posix_time.resolution = 1e-6;
+        _glfw.x11.timer.resolution = 1e-6;
     }
 
-    _glfw.posix_time.base = getRawTime();
+    _glfw.x11.timer.base = getRawTime();
 }
 
 
@@ -85,13 +86,13 @@ void _glfwInitTimer(void)
 
 double _glfwPlatformGetTime(void)
 {
-    return (double) (getRawTime() - _glfw.posix_time.base) *
-        _glfw.posix_time.resolution;
+    return (double) (getRawTime() - _glfw.x11.timer.base) *
+        _glfw.x11.timer.resolution;
 }
 
 void _glfwPlatformSetTime(double time)
 {
-    _glfw.posix_time.base = getRawTime() -
-        (uint64_t) (time / _glfw.posix_time.resolution);
+    _glfw.x11.timer.base = getRawTime() -
+        (uint64_t) (time / _glfw.x11.timer.resolution);
 }
 
