@@ -6,11 +6,31 @@
  */
 
 #include "Node.h"
+#include "Mesh.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
 Node::Node(MeshPtr mesh)
 	: mesh_(mesh) {}
+
+
+void Node::draw(const glm::mat4& transform) {
+
+	traverse(shared_from_this(), transform);
+}
+
+void Node::traverse(NodePtr node, const glm::mat4& transform) {
+
+	auto currentTransform = transform * transform_;
+	if(mesh_) {
+		mesh_->setView(currentTransform);
+		mesh_->draw();
+	}
+
+	for(auto child : node->getChildren()) {
+		traverse(child, currentTransform);
+	}
+}
 
 void Node::translate(float x, float y, float z) {
 	glm::translate(transform_, glm::vec3(x, y, z));

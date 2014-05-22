@@ -32,8 +32,6 @@ public:
 	virtual bool shouldClose() override;
 
 private:
-	void traverse(NodePtr node, const glm::mat4& current);
-
 	int width_;
 	int height_;
 	std::string name_;

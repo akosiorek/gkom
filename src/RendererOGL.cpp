@@ -6,12 +6,14 @@
  */
 
 #include "RendererOGL.h"
+#include "Node.h"
+
 #include "ICamera.h"
 
 #include <stdexcept>
 
 RendererOGL::RendererOGL(int width, int height, std::string name)
-	: width_(width), height_(height), name_(name) {}
+	: width_(width), height_(height), name_(name), shouldClose_(false) {}
 
 RendererOGL::~RendererOGL() {
 	shutdown();
@@ -57,13 +59,9 @@ void RendererOGL::clearScreen() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void RendererOGL::traverse(NodePtr node, const glm::mat4& current) {
-
-}
-
 void RendererOGL::render(NodePtr node) {
 
-	traverse(node, camera_->getTransform());
+	node->draw(camera_->getTransform());
 
 	glfwSwapBuffers(window_);
 	glfwPollEvents();
@@ -73,11 +71,11 @@ void RendererOGL::render(NodePtr node) {
 }
 
 void RendererOGL::setCamera(CameraPtr camera) {
-
+	camera_ = camera;
 }
 
 auto RendererOGL::getCamera() -> CameraPtr {
-
+	return camera_;
 }
 
 bool RendererOGL::shouldClose() {

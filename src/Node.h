@@ -17,14 +17,16 @@
 
 class Mesh;
 
-class Node : public Movable {
+class Node : public Movable, public std::enable_shared_from_this<Node> {
 	typedef std::shared_ptr<Mesh> MeshPtr;
 	typedef std::shared_ptr<Node> NodePtr;
 	typedef std::list<NodePtr> NodeList;
 
 public:
-	Node(MeshPtr mesh);
+	Node(MeshPtr mesh = nullptr);
 	virtual ~Node() = default;
+
+	void draw(const glm::mat4& transform = glm::mat4(1.0f));
 
 	virtual void translate(float x, float y = 0, float z = 0) override;
 	virtual void roate(Axis axis, float deg) override;
@@ -39,6 +41,8 @@ public:
 	void setTransform(const glm::mat4& transform);
 
 private:
+	void traverse(NodePtr node, const glm::mat4& transform);
+
 	NodeList nodes_;
 	MeshPtr mesh_;
 	glm::mat4 transform_;

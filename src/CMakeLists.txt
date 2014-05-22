@@ -20,7 +20,6 @@ include_directories(
     ${OPENGL_INCLUDE_DIRS}  
     ${GLUT_INCLUDE_DIRS} 
     glfw/include
-    #${glfw_INCLUDE_DIRS}
     ${GLM_INCLUDE_DIRS}
     ${GLEW_INCLUDE_DIRS}
 ) 
@@ -32,6 +31,7 @@ add_executable(gkom
         PerspectiveCamera.cpp
         RendererOGL.cpp
         Texture.cpp
+        Utils.cpp
  )
 
 target_link_libraries(gkom 
