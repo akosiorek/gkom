@@ -57,6 +57,11 @@ int main(int argc, char** argv) {
 	float speed = 100.0f;
 	float rotated = .0f;
 
+
+//	camera->rotate(Axis::X, -90);
+	camera->setDistance(3);
+
+
 	while(!renderer->shouldClose()) {
 
 		float shouldRotate = Utils::elapsedSinceLastFrame() * speed;
@@ -64,10 +69,11 @@ int main(int argc, char** argv) {
 		if(rotated >= 180.f || rotated <= -180.0f) {
 			speed *= -1;
 		}
-		rootNode->roate(Axis::Z, shouldRotate);
-		rightNode->roate(Axis::Z, -shouldRotate);
-		centerNode->roate(Axis::Z, -shouldRotate);
-		leftNode->roate(Axis::Z, -shouldRotate);
+
+		rootNode->rotate(Axis::Z, shouldRotate);
+		rightNode->rotate(Axis::Z, -shouldRotate);
+		centerNode->rotate(Axis::Z, -shouldRotate);
+		leftNode->rotate(Axis::Z, -shouldRotate);
 		renderer->clearScreen();
 		renderer->render(rootNode);
 	}

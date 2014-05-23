@@ -31,7 +31,7 @@ void Node::translate(float x, float y, float z) {
 	transform_ = glm::translate(transform_, glm::vec3(x, y, z));
 }
 
-void Node::roate(Axis axis, float deg) {
+void Node::rotate(Axis axis, float deg) {
 	switch(axis) {
 		case Axis::X: transform_ = glm::rotate(transform_, deg, glm::vec3(1.0f, .0f, .0f)); break;
 		case Axis::Y: transform_ = glm::rotate(transform_, deg, glm::vec3(.0f, 1.0f, .0f)); break;

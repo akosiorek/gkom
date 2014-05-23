@@ -16,8 +16,7 @@ public:
 	virtual ~PerspectiveCamera() = default;
 
 	virtual void translate(float x, float y = 0, float z = 0) override;
-	virtual void roate(Axis axis, float deg) override;
-	virtual void scale(float x, float y = 0, float z = 0) override;
+	virtual void rotate(Axis axis, float deg) override;
 
 	virtual void pointAt(float x, float y, float z) override;
 	virtual void setFOV(float fov) override;

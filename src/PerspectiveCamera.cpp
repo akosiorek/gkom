@@ -7,6 +7,8 @@
 
 #include "PerspectiveCamera.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 const float PerspectiveCamera::degToRad_ = 3.14159f * 2.0f / 360.0f;
 
 PerspectiveCamera::PerspectiveCamera()
@@ -14,21 +16,22 @@ PerspectiveCamera::PerspectiveCamera()
 
 	transform_[0][0] = scale_;
 	transform_[1][1] = scale_;
-	transform_[2][3] = -1.0f;
 
+	setDistance(1.0f);
 	setClipping(0.5f, 3.0f);
 }
 
 
 void PerspectiveCamera::translate(float x, float y, float z) {
-
+	transform_ = glm::translate(transform_, glm::vec3(x, y, z));
 }
 
-void PerspectiveCamera::roate(Axis axis, float deg) {
-
-}
-
-void PerspectiveCamera::scale(float x, float y, float z) {
+void PerspectiveCamera::rotate(Axis axis, float deg) {
+	switch(axis) {
+		case Axis::X: transform_ = glm::rotate(transform_, deg, glm::vec3(1.0f, .0f, .0f)); break;
+		case Axis::Y: transform_ = glm::rotate(transform_, deg, glm::vec3(.0f, 1.0f, .0f)); break;
+		case Axis::Z: transform_ = glm::rotate(transform_, deg, glm::vec3(.0f, .0f, 1.0f)); break;
+	}
 
 }
 
@@ -56,7 +59,7 @@ void PerspectiveCamera::setRatio(int width, int height) {
 }
 
 void PerspectiveCamera::setDistance(float distance) {
-
+	transform_[2][3] = -distance;
 }
 
 void PerspectiveCamera::setClipping(float near, float far) {

@@ -16,7 +16,7 @@ public:
 	virtual ~Movable() = default;
 
 	virtual void translate(float x, float y, float z) = 0;
-	virtual void roate(Axis axis, float deg) = 0;
+	virtual void rotate(Axis axis, float deg) = 0;
 	virtual void scale(float x, float y, float z) = 0;
 };
 

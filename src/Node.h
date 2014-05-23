@@ -29,7 +29,7 @@ public:
 	void draw(const glm::mat4& transform = glm::mat4(1.0f));
 
 	virtual void translate(float x, float y = 0, float z = 0) override;
-	virtual void roate(Axis axis, float deg) override;
+	virtual void rotate(Axis axis, float deg) override;
 	virtual void scale(float x, float y = 0, float z = 0) override;
 
 	void addChild(NodePtr node = nullptr);
@@ -41,8 +41,6 @@ public:
 	void setTransform(const glm::mat4& transform);
 
 private:
-	void traverse(NodePtr node, const glm::mat4& transform);
-
 	NodeList nodes_;
 	MeshPtr mesh_;
 	glm::mat4 transform_;

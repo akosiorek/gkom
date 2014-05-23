@@ -26,6 +26,8 @@ public:
 
 	virtual const glm::mat4& getTransform() const = 0;
 	virtual void setTransform(const glm::mat4& transform) = 0;
+
+	virtual void scale(float x, float y, float z) override {};
 };
 
 #endif /* ICAMERA_H_ */
