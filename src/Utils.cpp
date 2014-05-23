@@ -14,44 +14,83 @@
 const std::string Utils::shaderPrefix_ = "../src/shaders/";
 const std::string Utils::dataPrefix_ = "../src/data/";
 
-GLuint Utils::loadShader(GLenum shaderType, const std::string& shaderFilename) {
-
-	std::ifstream shaderFile(shaderPrefix_ + shaderFilename);
-	std::stringstream shaderData;
-	shaderData << shaderFile.rdbuf();
-	shaderFile.close();
-
-	const char* shaderDataPtr = shaderData.str().c_str();
+GLuint Utils::createShader(GLenum shaderType, const std::string &strShaderFile) {
 
 	GLuint shader = glCreateShader(shaderType);
-	glShaderSource (shader, 1, &shaderDataPtr, NULL);
-	glCompileShader (shader);
+	const char *strFileData = strShaderFile.c_str();
+	glShaderSource(shader, 1, &strFileData, NULL);
 
-	// check for compile errors
-	int params = -1;
-	glGetShaderiv (shader, GL_COMPILE_STATUS, &params);
-	if (GL_TRUE != params) {
-	  throw std::runtime_error("Couldn't compile shader " + shaderFilename);
+	glCompileShader(shader);
+
+	GLint status;
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
+	if (status == GL_FALSE) {
+		GLint infoLogLength;
+		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLength);
+
+		GLchar *strInfoLog = new GLchar[infoLogLength + 1];
+		glGetShaderInfoLog(shader, infoLogLength, NULL, strInfoLog);
+
+		const char *strShaderType = NULL;
+		switch (shaderType) {
+		case GL_VERTEX_SHADER:
+			strShaderType = "vertex";
+			break;
+		case GL_GEOMETRY_SHADER:
+			strShaderType = "geometry";
+			break;
+		case GL_FRAGMENT_SHADER:
+			strShaderType = "fragment";
+			break;
+		}
+
+		fprintf(stderr, "Compile failure in %s shader:\n%s\n", strShaderType,
+				strInfoLog);
+		delete[] strInfoLog;
 	}
 
 	return shader;
 }
 
+std::string Utils::loadFile(const std::string& filepath) {
+
+	std::ifstream file(filepath);
+	std::stringstream sstream;
+	sstream << file.rdbuf();
+	file.close();
+	return sstream.str();
+}
+
+GLuint Utils::loadShader(GLenum shaderType, const std::string& shaderFilename) {
+
+	std::string shaderData = loadFile(shaderPrefix_ + shaderFilename);
+	return createShader(shaderType, shaderData);
+}
+
 GLuint Utils::createProgram(const std::vector<GLuint> &shaderList) {
-		GLuint program =  glCreateProgram ();
 
-		for(auto shader : shaderList) {
-			glAttachShader(program, shader);
-		}
-		glLinkProgram (program);
+	GLuint program = glCreateProgram();
+	for (size_t iLoop = 0; iLoop < shaderList.size(); iLoop++)
+		glAttachShader(program, shaderList[iLoop]);
 
-		int params = -1;
-		glGetProgramiv (program, GL_LINK_STATUS, &params);
-		if (GL_TRUE != params) {
-			throw std::runtime_error("could not link shader programme");
-		}
+	glLinkProgram(program);
 
-		return program;
+	GLint status;
+	glGetProgramiv(program, GL_LINK_STATUS, &status);
+	if (status == GL_FALSE) {
+		GLint infoLogLength;
+		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLogLength);
+
+		GLchar *strInfoLog = new GLchar[infoLogLength + 1];
+		glGetProgramInfoLog(program, infoLogLength, NULL, strInfoLog);
+		fprintf(stderr, "Linker failure: %s\n", strInfoLog);
+		delete[] strInfoLog;
+	}
+
+	for (size_t iLoop = 0; iLoop < shaderList.size(); iLoop++)
+		glDetachShader(program, shaderList[iLoop]);
+
+	return program;
 }
 
 template <typename T>
@@ -77,4 +116,13 @@ std::vector<float> Utils::loadVertexData(const std::string& filename) {
 	}
 
 	return data;
+}
+
+GLuint Utils::genBuffer(GLenum bufferType, GLenum drawType, const std::vector<float>& data) {
+
+	GLuint vertexBuffer = 0;
+	glGenBuffers (1, &vertexBuffer);
+	glBindBuffer (bufferType, vertexBuffer);
+	glBufferData (bufferType, data.size() * sizeof(float), data.data(), drawType);
+	return vertexBuffer;
 }

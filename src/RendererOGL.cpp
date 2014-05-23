@@ -9,8 +9,11 @@
 #include "Node.h"
 
 #include "ICamera.h"
+#include "Utils.h"
 
 #include <stdexcept>
+#include <vector>
+#include <cstring>
 
 RendererOGL::RendererOGL(int width, int height, std::string name)
 	: width_(width), height_(height), name_(name), shouldClose_(false) {}
@@ -41,6 +44,12 @@ void RendererOGL::init() {
 	printf("Renderer: %s\n", renderer);
 	printf("OpenGL version supported %s\n", version);
 
+	// Close window on esc
+	glfwSetKeyCallback(window_,	[](GLFWwindow* window, int key, int scancode, int action, int mods) {
+				if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+				glfwSetWindowShouldClose(window, GL_TRUE);
+			});
+
 	// tell GL to only draw onto a pixel if the shape is closer to the viewer
 	glEnable(GL_DEPTH_TEST); // enable depth-testing
 	glDepthFunc(GL_LESS); // depth-testing interprets a smaller value as "closer"
@@ -52,6 +61,7 @@ void RendererOGL::init() {
 }
 
 void RendererOGL::shutdown() {
+	glfwDestroyWindow(window_);
 	glfwTerminate();
 }
 

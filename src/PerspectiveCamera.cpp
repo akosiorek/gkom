@@ -10,7 +10,7 @@
 const float PerspectiveCamera::degToRad_ = 3.14159f * 2.0f / 360.0f;
 
 PerspectiveCamera::PerspectiveCamera()
-	: ratio_(1.0f), scale_(1.0f) {
+	: ratio_(1.0f), scale_(1.0f), transform_(.0f) {
 
 	transform_[0][0] = scale_;
 	transform_[1][1] = scale_;

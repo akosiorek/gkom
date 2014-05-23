@@ -26,8 +26,13 @@ public:
 	template <typename T>
 	static T str2num(const std::string& str, const T defaultValue = T());
 	static std::vector<float> loadVertexData(const std::string& filename);
+	static std::string loadFile(const std::string& filepath);
+	static GLuint genBuffer(GLenum bufferType, GLenum drawType, const std::vector<float>& data);
+
 
 private:
+	static GLuint createShader(GLenum shaderType, const std::string& strShaderFile);
+
 	static const std::string shaderPrefix_;
 	static const std::string dataPrefix_;
 };

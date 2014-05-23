@@ -17,7 +17,7 @@
 
 class Mesh;
 
-class Node : public Movable, public std::enable_shared_from_this<Node> {
+class Node : public Movable {
 	typedef std::shared_ptr<Mesh> MeshPtr;
 	typedef std::shared_ptr<Node> NodePtr;
 	typedef std::list<NodePtr> NodeList;

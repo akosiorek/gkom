@@ -32,10 +32,12 @@ int main(int argc, char** argv) {
 	};
 
 	GLuint program = Utils::createProgram(shaders);
-
-	MeshPtr mesh = std::make_shared<Mesh>(program, "perspectiveMatrix");
-	mesh->setColours(Utils::loadVertexData("matrix.col"));
-	mesh->setGeometry(Utils::loadVertexData("matrix.vert"));
+	std::string viewName = "perspectiveMatrix";
+	auto colour = Utils::loadVertexData("matrix.col");
+	auto geom = Utils::loadVertexData("matrix.vert");
+	MeshPtr mesh = std::make_shared<Mesh>(geom, colour);
+	mesh->setProgram(program);
+	mesh->setViewName(viewName);
 
 	NodePtr rootNode = std::make_shared<Node>();
 
@@ -57,6 +59,5 @@ int main(int argc, char** argv) {
 
 		renderer->clearScreen();
 		renderer->render(rootNode);
-
 	}
 }

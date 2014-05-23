@@ -19,7 +19,7 @@
 
 class Mesh {
 public:
-	Mesh(GLuint program, std::string viewName);
+	Mesh(const std::vector<float>& geom, const std::vector<float>& colour);
 	virtual ~Mesh() = default;
 
 	void setView(const glm::mat4& view);
@@ -40,6 +40,7 @@ private:
 	std::vector<float> colours_;
 	GLuint program_;
 	GLuint viewUniform_;
+	GLuint vao_;
 	std::string viewName_;
 };
 
