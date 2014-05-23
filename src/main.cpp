@@ -50,13 +50,24 @@ int main(int argc, char** argv) {
 	NodePtr rightNode = std::make_shared<Node>(mesh);
 	rightNode->translate(0.75f, -.3f, .0f);
 
-
 	rootNode->addChild(leftNode);
 	rootNode->addChild(centerNode);
 	rootNode->addChild(rightNode);
 
+	float speed = 100.0f;
+	float rotated = .0f;
+
 	while(!renderer->shouldClose()) {
 
+		float shouldRotate = Utils::elapsedSinceLastFrame() * speed;
+		rotated += shouldRotate;
+		if(rotated >= 180.f || rotated <= -180.0f) {
+			speed *= -1;
+		}
+		rootNode->roate(Axis::Z, shouldRotate);
+		rightNode->roate(Axis::Z, -shouldRotate);
+		centerNode->roate(Axis::Z, -shouldRotate);
+		leftNode->roate(Axis::Z, -shouldRotate);
 		renderer->clearScreen();
 		renderer->render(rootNode);
 	}

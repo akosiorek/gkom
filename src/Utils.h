@@ -28,6 +28,7 @@ public:
 	static std::vector<float> loadVertexData(const std::string& filename);
 	static std::string loadFile(const std::string& filepath);
 	static GLuint genBuffer(GLenum bufferType, GLenum drawType, const std::vector<float>& data);
+	static double elapsedSinceLastFrame();
 
 
 private:

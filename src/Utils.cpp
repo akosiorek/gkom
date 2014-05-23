@@ -126,3 +126,12 @@ GLuint Utils::genBuffer(GLenum bufferType, GLenum drawType, const std::vector<fl
 	glBufferData (bufferType, data.size() * sizeof(float), data.data(), drawType);
 	return vertexBuffer;
 }
+
+double Utils::elapsedSinceLastFrame() {
+
+	static double lastTime = glfwGetTime();
+	double thisTime = glfwGetTime();
+	double elapsed = thisTime - lastTime;
+	lastTime = thisTime;
+	return elapsed;
+}
