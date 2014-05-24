@@ -26,12 +26,16 @@ include_directories(
 
 add_executable(gkom 
         main.cpp
-        Mesh.cpp
+        ColouredVertMesh.cpp
         Node.cpp
         PerspectiveCamera.cpp
         RendererOGL.cpp
         Texture.cpp
         Utils.cpp
+        MeshConfig.cpp
+        IMesh.cpp
+        UniformColouredMesh.cpp
+        PlaneGenerator.cpp
  )
 
 target_link_libraries(gkom 

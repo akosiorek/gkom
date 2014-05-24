@@ -43,6 +43,7 @@ private:
 	glm::mat4 rotation_;
 	glm::mat4 projection_;
 	glm::mat4 view_;
+	glm::mat4 model_;
 	mutable glm::mat4 transform_;
 	mutable bool outdated_;
 

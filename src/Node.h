@@ -15,10 +15,10 @@
 #include <memory>
 #include <list>
 
-class Mesh;
+class IMesh;
 
 class Node : public Movable {
-	typedef std::shared_ptr<Mesh> MeshPtr;
+	typedef std::shared_ptr<IMesh> MeshPtr;
 	typedef std::shared_ptr<Node> NodePtr;
 	typedef std::list<NodePtr> NodeList;
 

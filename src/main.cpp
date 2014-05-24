@@ -1,76 +1,137 @@
 
-
-#include "IRenderer.h"
+//	Camera
 #include "ICamera.h"
-
-#include "RendererOGL.h"
 #include "PerspectiveCamera.h"
-#include "Node.h"
-#include "Mesh.h"
 
+//	Mesh
+#include "IMesh.h"
+#include "MeshConfig.h"
+#include "ColouredVertMesh.h"
+#include "UniformColouredMesh.h"
+
+//	Renderer
+#include "IRenderer.h"
+#include "RendererOGL.h"
+
+//	Others
+#include "Node.h"
 #include "Utils.h"
+#include "PlaneGenerator.h"
 
 #include <iostream>
 #include <memory>
 
 typedef std::unique_ptr<IRenderer> RendererPtr;
-typedef std::shared_ptr<Mesh> MeshPtr;
+typedef std::shared_ptr<IMesh> MeshPtr;
 typedef std::shared_ptr<Node> NodePtr;
 typedef std::shared_ptr<ICamera> CameraPtr;
 
+
 int main(int argc, char** argv) {
 
-	CameraPtr camera = std::make_shared<PerspectiveCamera>();
+	srand (time(NULL));
 
+//	Camera setup
+	CameraPtr camera = std::make_shared<PerspectiveCamera>();
+	camera->setClipping(0.5f, 100.f);
+
+	camera->translate(3, 4, -1);
+//	camera->rotate(Axis::X, -45);
+//	camera->rotate(Axis::Y, -50);
+
+
+
+
+//	Renderer setup
 	RendererPtr renderer(new RendererOGL());
 	renderer->init();
 	renderer->setCamera(camera);
+//	Wire frame rendering
+	glPolygonMode(GL_FRONT, GL_LINE);
 
-	std::vector<GLuint> shaders = {
-			Utils::loadShader(GL_VERTEX_SHADER, "matrix_vs.glsl"),
-			Utils::loadShader(GL_FRAGMENT_SHADER, "colours_fs.glsl")
-	};
+//	Program setup
+	MeshConfig::COLORED_VERT_PROGRAM = Utils::createProgram({
+		Utils::loadShader(GL_VERTEX_SHADER, "matrix_vs.glsl"),
+		Utils::loadShader(GL_FRAGMENT_SHADER, "colours_fs.glsl")
+	});
 
-	GLuint program = Utils::createProgram(shaders);
-	std::string viewName = "perspectiveMatrix";
-	auto colour = Utils::loadVertexData("matrix.col");
-	auto geom = Utils::loadVertexData("matrix.vert");
-	MeshPtr mesh = std::make_shared<Mesh>(geom, colour);
-	mesh->setProgram(program);
-	mesh->setViewName(viewName);
+	MeshConfig::UNIFORM_COLOR_PROGRAM = Utils::createProgram({
+		Utils::loadShader(GL_VERTEX_SHADER, "no_col_matrix_vs.glsl"),
+		Utils::loadShader(GL_FRAGMENT_SHADER, "unif_colours_fs.glsl")
+	});
 
-	NodePtr rootNode = std::make_shared<Node>();
 
-	NodePtr leftNode = std::make_shared<Node>(mesh);
+//	Mesh setup
+	std::unique_ptr<PlaneGenerator> planeGenerator(new PlaneGenerator());
+
+	std::vector<float> cuboidGeom = Utils::loadVertexData("matrix3.vert");
+	std::vector<unsigned> cuboidIndices;
+	for(int i = 0; i < cuboidGeom.size(); ++i) {
+		cuboidIndices.push_back(i);
+	}
+
+	MeshPtr cuboidMesh = std::make_shared<ColouredVertMesh>(
+			cuboidGeom,
+			Utils::loadVertexData("matrix3.col"),
+			cuboidIndices
+	);
+
+	std::vector<float> colour = {.3f, .3f, .3f};
+
+
+	planeGenerator->generate(100, 100, 80);
+	MeshPtr planeMesh = std::make_shared<UniformColouredMesh>(
+//			Utils::loadVertexData("plane.vert"),
+			planeGenerator->getVertices(),
+			colour,
+			planeGenerator->getIndices(),
+			GL_TRIANGLE_STRIP
+	);
+
+
+// Rotating nodes
+	NodePtr rotatingNode = std::make_shared<Node>();
+	rotatingNode->translate(0, 2, 0);
+
+	NodePtr leftNode = std::make_shared<Node>(cuboidMesh);
 	leftNode->translate(-0.75f, 0.3f, .0);
 
-	NodePtr centerNode = std::make_shared<Node>(mesh);
+	NodePtr centerNode = std::make_shared<Node>(cuboidMesh);
 	centerNode->translate(.0f, .5f, .0f);
 
-	NodePtr rightNode = std::make_shared<Node>(mesh);
+	NodePtr rightNode = std::make_shared<Node>(cuboidMesh);
 	rightNode->translate(0.75f, -.3f, .0f);
 
-	rootNode->addChild(leftNode);
-	rootNode->addChild(centerNode);
-	rootNode->addChild(rightNode);
+	rotatingNode->addChild(leftNode);
+	rotatingNode->addChild(centerNode);
+	rotatingNode->addChild(rightNode);
 
+//	Plane node
+	NodePtr planeNode = std::make_shared<Node>(planeMesh);
+
+	planeNode->translate(-50, 0, -50);
+//	planeNode->scale(3, 3, 3);
+
+//	Root node
+	NodePtr rootNode = std::make_shared<Node>();
+	rootNode->addChild(planeNode);
+	rootNode->addChild(rotatingNode);
+
+
+//	Movement
 	float speed = 100.0f;
 	float rotated = .0f;
 
 
-	camera->setClipping(0.5f, 10.f);
-	camera->translate(1.5, 4, -1);
-	camera->rotate(Axis::X, -30);
-
 	while(!renderer->shouldClose()) {
 
 		float shouldRotate = Utils::elapsedSinceLastFrame() * speed;
-		rotated += shouldRotate;
-		if(rotated >= 180.f || rotated <= -180.0f) {
-			speed *= -1;
-		}
+//		rotated += shouldRotate;
+//		if(rotated >= 180.f || rotated <= -180.0f) {
+//			speed *= -1;
+//		}
 
-		rootNode->rotate(Axis::Z, shouldRotate);
+		rotatingNode->rotate(Axis::Z, shouldRotate);
 		rightNode->rotate(Axis::Z, -shouldRotate);
 		centerNode->rotate(Axis::Z, -shouldRotate);
 		leftNode->rotate(Axis::Z, -shouldRotate);

@@ -22,6 +22,7 @@ PerspectiveCamera::PerspectiveCamera()
 	rotation_(1.0f),
 	projection_(.0f),
 	view_(.0f),
+	model_(1.0f),
 	transform_(.0f),
 	outdated_(true) {
 
@@ -44,11 +45,10 @@ void PerspectiveCamera::updateProjection() {
 void PerspectiveCamera::updateTransform() const {
 
 	if(outdated_) {
-		transform_ = projection_ * view_;
+		transform_ = projection_ * view_ * model_;
 		outdated_ = false;
 	}
 }
-
 
 void PerspectiveCamera::translate(float x, float y, float z) {
 	position_ += glm::vec3(x, y, -z);
@@ -57,11 +57,15 @@ void PerspectiveCamera::translate(float x, float y, float z) {
 }
 
 void PerspectiveCamera::rotate(Axis axis, float deg) {
+
+	glm::vec3 tmp;
 	switch(axis) {
-		case Axis::X: view_ = glm::rotate(view_, deg, glm::vec3(1.0f, .0f, .0f)); break;
-		case Axis::Y: view_ = glm::rotate(view_, deg, glm::vec3(.0f, 1.0f, .0f)); break;
-		case Axis::Z: view_ = glm::rotate(view_, deg, glm::vec3(.0f, .0f, 1.0f)); break;
+	case Axis::X: tmp = glm::vec3(1.0f, .0f, .0f); break;
+	case Axis::Y: tmp = glm::vec3(.0f, 1.0f, .0f); break;
+	case Axis::Z: tmp = glm::vec3(.0f, .0f, 1.0f); break;
 	}
+
+	model_ = glm::rotate(model_, deg, tmp);
 	outdated_ = true;
 }
 

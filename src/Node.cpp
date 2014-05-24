@@ -6,7 +6,7 @@
  */
 
 #include "Node.h"
-#include "Mesh.h"
+#include "IMesh.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
