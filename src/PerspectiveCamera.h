@@ -28,11 +28,23 @@ public:
 	virtual void setTransform(const glm::mat4& transform) override;
 
 private:
-	glm::mat4 transform_;
+	void updateView();
+	void updateProjection();
+	void updateTransform() const ;
+
+private:
+	float ratio_;
+	float fov_;
 	float near_;
 	float far_;
-	float scale_;
-	float ratio_;
+	glm::vec3 position_;
+	glm::vec3 target_;
+	glm::vec3 up_;
+	glm::mat4 rotation_;
+	glm::mat4 projection_;
+	glm::mat4 view_;
+	mutable glm::mat4 transform_;
+	mutable bool outdated_;
 
 	static const float degToRad_;
 };

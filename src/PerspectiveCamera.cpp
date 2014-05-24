@@ -12,50 +12,74 @@
 const float PerspectiveCamera::degToRad_ = 3.14159f * 2.0f / 360.0f;
 
 PerspectiveCamera::PerspectiveCamera()
-	: ratio_(1.0f), scale_(1.0f), transform_(.0f) {
+	: ratio_(764.f / 1024.f),
+	fov_(90.f),
+	near_(0.5f),
+	far_(3.0f),
+	position_(.0f, .0f, .0f),
+	target_(.0f, .0f, -1.0f),
+	up_(.0f, 1.f, .0f),
+	rotation_(1.0f),
+	projection_(.0f),
+	view_(.0f),
+	transform_(.0f),
+	outdated_(true) {
 
-	transform_[0][0] = scale_;
-	transform_[1][1] = scale_;
+	updateView();
+	updateProjection();
+}
 
-	setDistance(1.0f);
-	setClipping(0.5f, 3.0f);
+void PerspectiveCamera::updateView() {
+
+	view_ = glm::lookAt(position_, target_, up_);
+	outdated_ = true;
+}
+
+void PerspectiveCamera::updateProjection() {
+
+	projection_ = glm::perspective(fov_, ratio_, near_, far_);
+	outdated_ = true;
+}
+
+void PerspectiveCamera::updateTransform() const {
+
+	if(outdated_) {
+		transform_ = projection_ * view_;
+		outdated_ = false;
+	}
 }
 
 
 void PerspectiveCamera::translate(float x, float y, float z) {
-	transform_ = glm::translate(transform_, glm::vec3(x, y, z));
+	position_ += glm::vec3(x, y, -z);
+	updateView();
+
 }
 
 void PerspectiveCamera::rotate(Axis axis, float deg) {
 	switch(axis) {
-		case Axis::X: transform_ = glm::rotate(transform_, deg, glm::vec3(1.0f, .0f, .0f)); break;
-		case Axis::Y: transform_ = glm::rotate(transform_, deg, glm::vec3(.0f, 1.0f, .0f)); break;
-		case Axis::Z: transform_ = glm::rotate(transform_, deg, glm::vec3(.0f, .0f, 1.0f)); break;
+		case Axis::X: view_ = glm::rotate(view_, deg, glm::vec3(1.0f, .0f, .0f)); break;
+		case Axis::Y: view_ = glm::rotate(view_, deg, glm::vec3(.0f, 1.0f, .0f)); break;
+		case Axis::Z: view_ = glm::rotate(view_, deg, glm::vec3(.0f, .0f, 1.0f)); break;
 	}
-
+	outdated_ = true;
 }
 
 void PerspectiveCamera::pointAt(float x, float y, float z) {
-
+	target_ = glm::vec3(x, y, z);
+	updateView();
 }
 
 void PerspectiveCamera::setFOV(float fov) {
 
-	float scale = 1.0f / tan(fov * degToRad_ / 2.0f);
-	if(scale != scale_) {
-		scale_ = scale;
-		transform_[0][0] = scale_ * ratio_;
-		transform_[1][1] = scale_;
-	}
+	fov_ = fov;
+	updateProjection();
 }
 
 void PerspectiveCamera::setRatio(int width, int height) {
 
-	float ratio = float(width) / height;
-	if(ratio != ratio_) {
-		ratio_ = ratio;
-		transform_[0][0] = scale_ * ratio;
-	}
+	ratio_ = float(height) / width;
+	updateProjection();
 }
 
 void PerspectiveCamera::setDistance(float distance) {
@@ -64,18 +88,17 @@ void PerspectiveCamera::setDistance(float distance) {
 
 void PerspectiveCamera::setClipping(float near, float far) {
 
-	if(near != near_ || far != far_) {
-		near_ = near;
-		far_ = far;
-		transform_[2][2] = (far_ + near_) / (near_ - far_);
-		transform_[3][2] = (2 * far_ * near_) / (near_ - far_);
-	}
+	near_ = near;
+	far_ = far;
+	updateProjection();
 }
 
 const glm::mat4& PerspectiveCamera::getTransform() const {
+	updateTransform();
 	return transform_;
 }
 
 void PerspectiveCamera::setTransform(const glm::mat4& transform) {
 	transform_ = transform;
+	outdated_ = false;
 }

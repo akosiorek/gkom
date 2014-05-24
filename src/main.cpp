@@ -58,9 +58,9 @@ int main(int argc, char** argv) {
 	float rotated = .0f;
 
 
-//	camera->rotate(Axis::X, -90);
-	camera->setDistance(3);
-
+	camera->setClipping(0.5f, 10.f);
+	camera->translate(1.5, 4, -1);
+	camera->rotate(Axis::X, -30);
 
 	while(!renderer->shouldClose()) {
 
