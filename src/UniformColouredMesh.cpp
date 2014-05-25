@@ -40,8 +40,20 @@ void UniformColouredMesh::draw() {
 	glUseProgram(MeshConfig::UNIFORM_COLOR_PROGRAM);
 	glUniform3f(colourUniform_, colours_[0], colours_[1],colours_[2]);
 	glBindVertexArray (vao_);
-	 drawFunc_();
+	drawFunc_();
 	glUseProgram (0);
+}
+
+void UniformColouredMesh::setNormals(const std::vector<float>& normals) {
+
+	IMesh::setNormals(normals);
+
+	GLuint normalVBO = Utils::genBuffer(GL_ARRAY_BUFFER, GL_STATIC_DRAW, normals_);
+
+	glBindVertexArray (vao_);
+	glEnableVertexAttribArray (1);
+	glBindBuffer (GL_ARRAY_BUFFER, normalVBO);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 }
 
 

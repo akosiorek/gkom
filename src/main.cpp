@@ -36,9 +36,8 @@ int main(int argc, char** argv) {
 	camera->setClipping(0.5f, 100.f);
 
 	camera->translate(3, 4, -1);
-//	camera->rotate(Axis::X, -45);
+	camera->rotate(Axis::X, -45);
 //	camera->rotate(Axis::Y, -50);
-
 
 
 
@@ -81,12 +80,12 @@ int main(int argc, char** argv) {
 
 	planeGenerator->generate(100, 100, 80);
 	MeshPtr planeMesh = std::make_shared<UniformColouredMesh>(
-//			Utils::loadVertexData("plane.vert"),
 			planeGenerator->getVertices(),
 			colour,
 			planeGenerator->getIndices(),
 			GL_TRIANGLE_STRIP
 	);
+//	planeMesh->setNormals(planeGenerator->getNormals());
 
 
 // Rotating nodes

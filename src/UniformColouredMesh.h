@@ -19,6 +19,8 @@ public:
 	virtual void setView(const glm::mat4& view) override;
 	virtual void draw() override;
 
+	virtual void setNormals(const std::vector<float>& normals);
+
 private:
 	GLuint viewUniform_;
 	GLuint colourUniform_;

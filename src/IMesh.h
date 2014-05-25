@@ -31,10 +31,13 @@ public:
 	virtual void setColours(const std::vector<float>& colours);
 	virtual const std::vector<float>& getGeometry() const;
 	virtual void setGeometry(const std::vector<float>& geometry);
+	virtual const std::vector<float>& getNormals() const;
+	virtual void setNormals(const std::vector<float>& normals);
 
 protected:
 	std::vector<float> geometry_;
 	std::vector<float> colours_;
+	std::vector<float> normals_;
 	std::vector<unsigned> indices_;
 	GLuint drawMode_;
 	std::function<void(void)> drawFunc_;

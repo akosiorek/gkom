@@ -35,3 +35,11 @@ const std::vector<float>& IMesh::getGeometry() const {
 void IMesh::setGeometry(const std::vector<float>& geometry) {
 	geometry_ = geometry;
 }
+
+const std::vector<float>& IMesh::getNormals() const {
+	return normals_;
+}
+
+void IMesh::setNormals(const std::vector<float>& normals) {
+	normals_ = normals;
+}

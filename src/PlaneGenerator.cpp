@@ -9,8 +9,9 @@
 
 #include <ctime>
 #include <cstdlib>
+#include <list>
 
-std::vector<float> PlaneGenerator::genVertices(int width, int height, int noise) {
+std::vector<float> PlaneGenerator::genVertices(int width, int height, int noise) const {
 
 	std::vector<float> vertices;
 	vertices.reserve(width * height * 3);
@@ -26,10 +27,10 @@ std::vector<float> PlaneGenerator::genVertices(int width, int height, int noise)
 	return vertices;
 }
 
-std::vector<unsigned> PlaneGenerator::genIndices(int width, int height) {
+std::vector<unsigned> PlaneGenerator::genIndices(int width, int height) const {
 
 	std::vector<unsigned> indices;
-	indices.reserve((width * height) + (width - 1) * (height - 2));
+	indices.reserve((2 * width + 2) * (height - 1));
 
     for (int r = 0; r < height - 1; ++r) {
         indices.push_back(r * width);
@@ -42,9 +43,73 @@ std::vector<unsigned> PlaneGenerator::genIndices(int width, int height) {
     return indices;
 }
 
+glm::vec3 PlaneGenerator::getVert(unsigned v) const {
+
+	v *= 3;
+	return glm::vec3(vertices_[v], vertices_[v+1], vertices_[v+2]);
+}
+
+std::vector<float> PlaneGenerator::genNormals(int width, int height) const {
+
+	std::vector<std::list<glm::vec3>> averaged(vertices_.size() / 3);
+	std::vector<float> normals;
+	normals.reserve(vertices_.size());
+
+	glm::vec3 vert[3];
+	unsigned ind[3];
+
+	auto it = ++indices_.begin();
+	for(int i = 0; i < 3; ++i) {
+		ind[i] = *it++;
+		vert[i] = getVert(ind[i]);
+	}
+
+	for(; it != indices_.end();) {
+
+		glm::vec3 normal = glm::cross(vert[0] - vert[1], vert[0] - vert[2]);
+//		if(normal != glm::vec3(.0f)) {
+//			normal = glm::normalize(normal);
+//		}
+		for(int i = 0; i < 3; ++i) {
+			averaged[ind[i]].push_back(normal);
+		}
+
+		vert[0] = vert[1];
+		vert[1] = vert[2];
+
+		ind[0] = ind[1];
+		ind[1] = ind[2];
+
+		unsigned tmpInd = *it++;
+		while(tmpInd == ind[2] && it != indices_.end()) {
+			tmpInd = *it++;
+		}
+		vert[2] = getVert(tmpInd);
+	}
+
+	for(const auto& list : averaged) {
+		glm::vec3 avg(.0f);
+		int count = 0;
+		for(const auto& vec : list) {
+			avg += vec;
+			++count;
+		}
+		avg = glm::pow(avg, glm::vec3(1.0f / count));
+//		if(avg != glm::vec3(.0f)) {
+//			avg = glm::normalize(avg);
+//		}
+		normals.push_back(avg.x);
+		normals.push_back(avg.y);
+		normals.push_back(avg.z);
+	}
+
+	return normals;
+}
+
 void PlaneGenerator::generate(int width, int height, int noise) {
 	vertices_ = genVertices(width, height, noise);
 	indices_ = genIndices(width, height);
+	normals_ = genNormals(width, height);
 }
 
 void PlaneGenerator::displace(int x, int y, float dx, float dy, float dz) {
@@ -65,4 +130,12 @@ const std::vector<float>& PlaneGenerator::getVertices() const {
 
 void PlaneGenerator::setVertices(const std::vector<float>& vertices) {
 	vertices_ = vertices;
+}
+
+const std::vector<float>& PlaneGenerator::getNormals() const {
+	return normals_;
+}
+
+void PlaneGenerator::setNormals(const std::vector<float>& normals) {
+	normals_ = normals;
 }
