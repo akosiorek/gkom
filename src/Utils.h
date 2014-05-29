@@ -12,8 +12,11 @@
 #define GLFW_DLL
 #include <GLFW/glfw3.h>
 
+#include "glm/glm.hpp"
+
 #include <vector>
 #include <string>
+#include <fstream>
 
 class Utils {
 public:
@@ -29,6 +32,18 @@ public:
 	static std::string loadFile(const std::string& filepath);
 	static GLuint genBuffer(GLenum bufferType, GLenum drawType, const std::vector<float>& data);
 	static double elapsedSinceLastFrame();
+	static void setAmbientLight(const glm::vec4& light);
+
+	template<typename T>
+	static void dumpVec(const std::vector<T>& vec, const std::string& logfile) {
+
+		std::ofstream of(logfile);
+		for(int i = 0; i < vec.size(); ++i) {
+			of << vec[i] << " ";
+			if(i % 100 == 0)
+				of << std::endl;
+		}
+	}
 
 
 private:

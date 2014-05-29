@@ -17,8 +17,9 @@ Node::Node(MeshPtr mesh)
 void Node::draw(const glm::mat4& transform) {
 
 	auto currentTransform = transform * transform_;
+//	auto currentNormalTransform = glm::transpose(glm::inverse(glm::mat3(currentTransform)));
 	if(mesh_) {
-		mesh_->setView(currentTransform);
+		mesh_->setView(currentTransform);//, currentNormalMatrix);
 		mesh_->draw();
 	}
 

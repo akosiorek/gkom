@@ -19,6 +19,10 @@ public:
 	static unsigned UNIFORM_COLOR_PROGRAM;
 	static std::string PERSPECTIVE_UNIFORM_NAME;
 	static std::string COLOUR_UNIFORM_NAME;
+	static std::string NORMAL_UNIFORM_NAME;
+	static std::string LIGHT_DIR_UNIFORM_NAME;
+	static std::string DIFFUSE_LIGHT_UNIFORM_NAME;
+	static std::string AMBIENT_LIGHT_UNIFORM_NAME;
 };
 
 #endif /* MESHCONFIG_H_ */

@@ -37,16 +37,13 @@ int main(int argc, char** argv) {
 
 	camera->translate(3, 4, -1);
 	camera->rotate(Axis::X, -45);
-//	camera->rotate(Axis::Y, -50);
-
-
 
 //	Renderer setup
 	RendererPtr renderer(new RendererOGL());
 	renderer->init();
 	renderer->setCamera(camera);
 //	Wire frame rendering
-	glPolygonMode(GL_FRONT, GL_LINE);
+//	glPolygonMode(GL_FRONT, GL_LINE);
 
 //	Program setup
 	MeshConfig::COLORED_VERT_PROGRAM = Utils::createProgram({
@@ -55,8 +52,9 @@ int main(int argc, char** argv) {
 	});
 
 	MeshConfig::UNIFORM_COLOR_PROGRAM = Utils::createProgram({
-		Utils::loadShader(GL_VERTEX_SHADER, "no_col_matrix_vs.glsl"),
-		Utils::loadShader(GL_FRAGMENT_SHADER, "unif_colours_fs.glsl")
+		Utils::loadShader(GL_VERTEX_SHADER, "unif_colour_matrix_vs.glsl"),
+//		Utils::loadShader(GL_VERTEX_SHADER, "light_vs.glsl"),
+		Utils::loadShader(GL_FRAGMENT_SHADER, "colours3_fs.glsl")
 	});
 
 
@@ -75,7 +73,7 @@ int main(int argc, char** argv) {
 			cuboidIndices
 	);
 
-	std::vector<float> colour = {.3f, .3f, .3f};
+	std::vector<float> colour = {.3f, .3f, 1.0f};
 
 
 	planeGenerator->generate(100, 100, 80);
@@ -84,8 +82,9 @@ int main(int argc, char** argv) {
 			colour,
 			planeGenerator->getIndices(),
 			GL_TRIANGLE_STRIP
+//			planeGenerator->getNormals()
 	);
-//	planeMesh->setNormals(planeGenerator->getNormals());
+	planeMesh->setNormals(planeGenerator->getNormals());
 
 
 // Rotating nodes
@@ -115,6 +114,9 @@ int main(int argc, char** argv) {
 	NodePtr rootNode = std::make_shared<Node>();
 	rootNode->addChild(planeNode);
 	rootNode->addChild(rotatingNode);
+
+//	Ambient light
+	Utils::setAmbientLight(glm::vec4(3.f, 1.f, 1.f, 1.0f));
 
 
 //	Movement

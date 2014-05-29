@@ -6,6 +6,9 @@
  */
 
 #include "Utils.h"
+#include "MeshConfig.h"
+
+#include <glm/gtc/type_ptr.hpp>
 
 #include <fstream>
 #include <sstream>
@@ -135,3 +138,28 @@ double Utils::elapsedSinceLastFrame() {
 	lastTime = thisTime;
 	return elapsed;
 }
+
+void Utils::setAmbientLight(const glm::vec4& light) {
+
+	glUseProgram(MeshConfig::UNIFORM_COLOR_PROGRAM);
+	glUniform4fv(
+			glGetUniformLocation(MeshConfig::UNIFORM_COLOR_PROGRAM, MeshConfig::AMBIENT_LIGHT_UNIFORM_NAME.c_str()),
+			1, glm::value_ptr(light));
+//	glUniform3f(
+//			glGetUniformLocation(MeshConfig::UNIFORM_COLOR_PROGRAM, MeshConfig::AMBIENT_LIGHT_UNIFORM_NAME.c_str()),
+//			light.x, light.y, light.z);
+	glUseProgram(0);
+
+}
+
+//
+//template<typename T>
+//void Utils::dumpVec(const std::vector<T>& vec, const std::string& logfile) {
+//
+//	std::ofstream of(logfile);
+//	for(int i = 0; i < vec.size(); ++i) {
+//		of << vec[i] << " ";
+//		if(i % 100 == 0)
+//			of << std::endl;
+//	}
+//}

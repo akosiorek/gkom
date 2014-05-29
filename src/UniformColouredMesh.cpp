@@ -25,6 +25,7 @@ UniformColouredMesh::UniformColouredMesh(const std::vector<float>& geom, const s
 
 	viewUniform_ = glGetUniformLocation(MeshConfig::UNIFORM_COLOR_PROGRAM, MeshConfig::PERSPECTIVE_UNIFORM_NAME.c_str());
 	colourUniform_ = glGetUniformLocation(MeshConfig::UNIFORM_COLOR_PROGRAM, MeshConfig::COLOUR_UNIFORM_NAME.c_str());
+	normalUniform_ = glGetUniformLocation(MeshConfig::UNIFORM_COLOR_PROGRAM, MeshConfig::NORMAL_UNIFORM_NAME.c_str());
 
 }
 
@@ -32,6 +33,13 @@ void UniformColouredMesh::setView(const glm::mat4& view) {
 
 	glUseProgram(MeshConfig::UNIFORM_COLOR_PROGRAM);
 	glUniformMatrix4fv(viewUniform_, 1, GL_FALSE, glm::value_ptr(view));
+	glUseProgram(0);
+}
+
+void UniformColouredMesh::setNormalTransform(const glm::mat3 normalTransform) {
+
+	glUseProgram(MeshConfig::UNIFORM_COLOR_PROGRAM);
+	glUniformMatrix4fv(normalUniform_, 1, GL_FALSE, glm::value_ptr(normalTransform));
 	glUseProgram(0);
 }
 
@@ -53,7 +61,7 @@ void UniformColouredMesh::setNormals(const std::vector<float>& normals) {
 	glBindVertexArray (vao_);
 	glEnableVertexAttribArray (1);
 	glBindBuffer (GL_ARRAY_BUFFER, normalVBO);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 }
 
 

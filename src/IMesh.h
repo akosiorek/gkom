@@ -22,9 +22,11 @@ public:
 	IMesh(const std::vector<float>& geom, const std::vector<float>& colour,
 			const std::vector<unsigned>& indices, GLuint drawMode);
 
+
 	virtual ~IMesh() = default;
 
 	virtual void setView(const glm::mat4& view) = 0;
+	virtual void setNormalTransform(const glm::mat3 normalTransform) {};
 	virtual void draw() = 0;
 
 	virtual const std::vector<float>& getColours() const;

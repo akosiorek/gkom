@@ -6,10 +6,10 @@
  */
 
 #include "PlaneGenerator.h"
-
+#include "Utils.h"
 #include <ctime>
 #include <cstdlib>
-#include <list>
+#include <iostream>
 
 std::vector<float> PlaneGenerator::genVertices(int width, int height, int noise) const {
 
@@ -51,10 +51,7 @@ glm::vec3 PlaneGenerator::getVert(unsigned v) const {
 
 std::vector<float> PlaneGenerator::genNormals(int width, int height) const {
 
-	std::vector<std::list<glm::vec3>> averaged(vertices_.size() / 3);
-	std::vector<float> normals;
-	normals.reserve(vertices_.size());
-
+	std::vector<glm::vec3> averaged(vertices_.size() / 3);
 	glm::vec3 vert[3];
 	unsigned ind[3];
 
@@ -65,13 +62,11 @@ std::vector<float> PlaneGenerator::genNormals(int width, int height) const {
 	}
 
 	for(; it != indices_.end();) {
-
 		glm::vec3 normal = glm::cross(vert[0] - vert[1], vert[0] - vert[2]);
-//		if(normal != glm::vec3(.0f)) {
-//			normal = glm::normalize(normal);
-//		}
+		normal = glm::normalize(normal);
+
 		for(int i = 0; i < 3; ++i) {
-			averaged[ind[i]].push_back(normal);
+			averaged[ind[i]] += normal;
 		}
 
 		vert[0] = vert[1];
@@ -79,25 +74,19 @@ std::vector<float> PlaneGenerator::genNormals(int width, int height) const {
 
 		ind[0] = ind[1];
 		ind[1] = ind[2];
-
-		unsigned tmpInd = *it++;
-		while(tmpInd == ind[2] && it != indices_.end()) {
-			tmpInd = *it++;
+		if(ind[2] % 100 == 99 && ind[2] > 100 && *it < (width * height - 1)) {
+			++(++(++it));
 		}
-		vert[2] = getVert(tmpInd);
+		ind[2] = *it++;
+		vert[2] = getVert(ind[2]);
+
 	}
 
-	for(const auto& list : averaged) {
-		glm::vec3 avg(.0f);
-		int count = 0;
-		for(const auto& vec : list) {
-			avg += vec;
-			++count;
-		}
-		avg = glm::pow(avg, glm::vec3(1.0f / count));
-//		if(avg != glm::vec3(.0f)) {
-//			avg = glm::normalize(avg);
-//		}
+	std::vector<float> normals;
+	normals.reserve(vertices_.size());
+	for(auto& avg : averaged) {
+		avg = glm::normalize(avg);
+
 		normals.push_back(avg.x);
 		normals.push_back(avg.y);
 		normals.push_back(avg.z);
@@ -110,6 +99,7 @@ void PlaneGenerator::generate(int width, int height, int noise) {
 	vertices_ = genVertices(width, height, noise);
 	indices_ = genIndices(width, height);
 	normals_ = genNormals(width, height);
+	Utils::dumpVec(normals_, "normal.txt");
 }
 
 void PlaneGenerator::displace(int x, int y, float dx, float dy, float dz) {
