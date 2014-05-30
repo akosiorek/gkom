@@ -24,7 +24,7 @@ public:
 	RendererOGL(int width = 1024, int height = 768, std::string name = "OpenGL Renderer");
 	virtual ~RendererOGL();
 
-	virtual void render(NodePtr node) override;
+	virtual void render(NodePtr node, double elapsedTime) override;
 	virtual void clearScreen() override;
 	virtual void init() override;
 	virtual void shutdown() override;

@@ -21,10 +21,15 @@
 
 DecPtr1(Node);
 DecPtr1(Texture);
+DecPtr1(Box);
+DecPtr1(Movable);
+DecPtr1(Trajectory);
 
 DecPtr2(ICamera, Camera);
 DecPtr2(IMesh, Mesh);
 
+
 DecUPtr2(IRenderer, Renderer);
 
 #endif /* TYPEDEFS_H_ */
+

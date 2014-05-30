@@ -6,7 +6,6 @@
 //	Mesh
 #include "IMesh.h"
 #include "MeshConfig.h"
-#include "ColouredVertMesh.h"
 #include "UniformColouredMesh.h"
 
 //	Renderer
@@ -17,11 +16,73 @@
 #include "Node.h"
 #include "Utils.h"
 #include "PlaneGenerator.h"
+#include "NormalGenerator.h"
+#include "Box.h"
+#include "Trajectory.h"
 
 #include "typedefs.h"
 
 #include <iostream>
+#include <fstream>
 
+template<typename T>
+void dumpVec(const std::vector<T>& vec, const std::string& logfile) {
+
+	std::ofstream of(logfile);
+	for(int i = 0; i < vec.size(); ++i) {
+		of << vec[i] << " ";
+		if((i+1) % 3 == 0)
+			of << std::endl;
+	}
+}
+
+
+std::vector<float> white = {1, 1, 1};
+std::vector<float> red = {1, 0, 0};
+std::vector<float> green = {0, 1, 0};
+std::vector<float> blue = {0, 0, 1};
+std::vector<float> purple = {1, 0, 1};
+std::vector<float> black = {0, 0, 0};
+std::vector<float> gray = {0.3, 0.3, 0.3};
+
+
+NodePtr createSpaceShip() {
+
+	NodePtr shipNode = std::make_shared<Node>();
+
+	NodePtr corpus = std::make_shared<Box>(gray);
+	corpus->scale(1, 0.15, 0.25);
+
+
+	NodePtr rightWing = std::make_shared<Box>(gray);
+	rightWing->rotate(Axis::Y, 45);
+	rightWing->translate(-0.5);
+	rightWing->scale(0.6, 0.05, 0.1);
+
+
+	NodePtr leftWing = std::make_shared<Box>(gray);
+	leftWing->rotate(Axis::Y, 135);
+	leftWing->translate(0.5);
+	leftWing->scale(0.6, 0.05, 0.1);
+
+	shipNode->addChild(corpus);
+	shipNode->addChild(rightWing);
+	shipNode->addChild(leftWing);
+
+
+	TrajectoryPtr translate = std::make_shared<Trajectory>();
+	translate->addMove(-1, 3, MoveType::TransY);
+	translate->addMove(-1, 3, MoveType::TransZ);
+	translate->addMove(10, 20, MoveType::TransX);
+	shipNode->addTrajectory(translate);
+
+	TrajectoryPtr rotate = std::make_shared<Trajectory>();
+	rotate->addMove(15, 45, MoveType::RotY);
+	rotate->addMove(15, 45, MoveType::RotZ);
+	shipNode->addTrajectory(rotate);
+
+	return shipNode;
+}
 
 int main(int argc, char** argv) {
 
@@ -30,9 +91,9 @@ int main(int argc, char** argv) {
 //	Camera setup
 	CameraPtr camera = std::make_shared<PerspectiveCamera>();
 	camera->setClipping(0.5f, 100.f);
-
-	camera->translate(3, 4, -1);
-	camera->rotate(Axis::X, -45);
+	camera->translate(0, 30, 0);
+//	camera->pointAt(0, 0, 0);
+//	camera->rotate(Axis::X, -45);
 
 //	Renderer setup
 	RendererPtr renderer(new RendererOGL());
@@ -40,12 +101,6 @@ int main(int argc, char** argv) {
 	renderer->setCamera(camera);
 //	Wire frame rendering
 //	glPolygonMode(GL_FRONT, GL_LINE);
-
-//	Program setup
-	MeshConfig::COLORED_VERT_PROGRAM = Utils::createProgram({
-		Utils::loadShader(GL_VERTEX_SHADER, "matrix_vs.glsl"),
-		Utils::loadShader(GL_FRAGMENT_SHADER, "colours_fs.glsl")
-	});
 
 	MeshConfig::UNIFORM_COLOR_PROGRAM = Utils::createProgram({
 		Utils::loadShader(GL_VERTEX_SHADER, "ambient_is_diffuse_vs.glsl"),
@@ -56,122 +111,51 @@ int main(int argc, char** argv) {
 //	Mesh setup
 	std::unique_ptr<PlaneGenerator> planeGenerator(new PlaneGenerator());
 
-	std::vector<float> cuboidGeom = Utils::loadVertexData("matrix3.vert");
-	std::vector<unsigned> cuboidIndices;
-	for(int i = 0; i < cuboidGeom.size(); ++i) {
-		cuboidIndices.push_back(i);
-	}
-
-	MeshPtr cuboidMesh = std::make_shared<ColouredVertMesh>(
-			cuboidGeom,
-			Utils::loadVertexData("matrix3.col"),
-			cuboidIndices
-	);
-
-	std::vector<float> colour = {.3f, .3f, 1.0f};
-
 
 	planeGenerator->generate(100, 100, 80);
 	MeshPtr floorMesh = std::make_shared<UniformColourMesh>(
 			planeGenerator->getVertices(),
-			colour,
+			planeGenerator->getNormals(),
+			blue,
 			planeGenerator->getIndices(),
 			GL_TRIANGLE_STRIP
 	);
-	floorMesh->setNormals(planeGenerator->getNormals());
-
-	//simple plane
-	std::vector<float> planeGeom = Utils::loadVertexData("plane.vert");
-	std::vector<unsigned> planeIndices;
-	for(int i = 0; i < planeGeom.size(); ++i) {
-		planeIndices.push_back(i);
-	}
-	std::cout << planeGeom.size() << std::endl;
-	std::vector<float> white = {1, 1, 1};
-
-	MeshPtr planeMesh = std::make_shared<UniformColourMesh>(
-			planeGeom,
-			white,
-			planeIndices
-	);
-	planeMesh->setNormals(Utils::loadVertexData("plane.norm"));
-
-
-
-	NodePtr boxNode = std::make_shared<Node>();
-	NodePtr upBoxNode = std::make_shared<Node>(planeMesh);
-	NodePtr rightBoxNode = std::make_shared<Node>(planeMesh);
-	NodePtr fronBoxNode = std::make_shared<Node>(planeMesh);
-	NodePtr downBoxNode = std::make_shared<Node>(planeMesh);
-	NodePtr leftBoxNode = std::make_shared<Node>(planeMesh);
-	NodePtr backBoxNode = std::make_shared<Node>(planeMesh);
-
-	upBoxNode->translate(0, 1);
-
-	rightBoxNode->translate(1);
-	rightBoxNode->rotate(Axis::Z, -90);
-	fronBoxNode->translate(0, 0, 1);
-	fronBoxNode->rotate(Axis::X, 90);
-	downBoxNode->translate(0, -1);
-	downBoxNode->rotate(Axis::Y, 180);
-	leftBoxNode->translate(-1);
-	leftBoxNode->rotate(Axis::Z, 90);
-	backBoxNode->translate(0, 0, -1);
-	backBoxNode->rotate(Axis::X, 90);
-//
-	boxNode->addChild(upBoxNode);
-	boxNode->addChild(rightBoxNode);
-	boxNode->addChild(fronBoxNode);
-	boxNode->addChild(downBoxNode);
-	boxNode->addChild(leftBoxNode);
-	boxNode->addChild(backBoxNode);
-
 
 // Rotating nodes
 	NodePtr rotatingNode = std::make_shared<Node>();
 	rotatingNode->translate(0, 2, 0);
-
-	NodePtr leftNode = std::make_shared<Node>(cuboidMesh);
-	leftNode->translate(-0.75f, 0.3f, .0);
-
-	NodePtr centerNode = std::make_shared<Node>(cuboidMesh);
-	centerNode->translate(.0f, .5f, .0f);
-
-	NodePtr rightNode = std::make_shared<Node>(cuboidMesh);
-	rightNode->translate(0.75f, -.3f, .0f);
-
-	rotatingNode->addChild(leftNode);
-	rotatingNode->addChild(centerNode);
-	rotatingNode->addChild(rightNode);
 
 //	Floor node
 	NodePtr floorNode = std::make_shared<Node>(floorMesh);
 
 	floorNode->translate(-50, -3, -50);
 
+// Ship
+	NodePtr shipNode = createSpaceShip();
+	shipNode->translate(4);
+	shipNode->rotate(Axis::Y, 90);
+
 //	Root node
 	NodePtr rootNode = std::make_shared<Node>();
 	rootNode->addChild(floorNode);
 	rootNode->addChild(rotatingNode);
-	rotatingNode->addChild(boxNode);
+	rotatingNode->addChild(shipNode);
+//	rootNode->addChild(shipNode);
 
 //	Ambient light
-	Utils::setAmbientLight(glm::vec4(1.f, 1.f, 1.f, 1.0f));
+	Utils::setAmbientLight(glm::vec4(.3f, .3f, 0.3f, 1.0f));
 
 
 //	Movement
 	float speed = 100.0f;
 
-
 	while(!renderer->shouldClose()) {
 
-		float shouldRotate = Utils::elapsedSinceLastFrame() * speed;
+		double elapsedTime = Utils::elapsedSinceLastFrame();
+		float shouldRotate = elapsedTime * speed;
 
-		rotatingNode->rotate(Axis::Z, shouldRotate);
-		rightNode->rotate(Axis::Z, -shouldRotate);
-		centerNode->rotate(Axis::Z, -shouldRotate);
-		leftNode->rotate(Axis::Z, -shouldRotate);
+//		rotatingNode->rotate(Axis::Y, shouldRotate);
 		renderer->clearScreen();
-		renderer->render(rootNode);
+		renderer->render(rootNode, elapsedTime);
 	}
 }

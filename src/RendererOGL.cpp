@@ -75,7 +75,7 @@ void RendererOGL::clearScreen() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void RendererOGL::render(NodePtr node) {
+void RendererOGL::render(NodePtr node, double elapsedTime) {
 
     GLint OldCullFaceMode;
     glGetIntegerv(GL_CULL_FACE_MODE, &OldCullFaceMode);
@@ -95,7 +95,7 @@ void RendererOGL::render(NodePtr node) {
 
 ///////////////////////////////////////////////////////////
 
-	node->draw(camera_->getTransform());
+	node->draw(camera_->getTransform(), elapsedTime);
 
 	glfwSwapBuffers(window_);
 	glfwPollEvents();

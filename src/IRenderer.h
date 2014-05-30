@@ -17,7 +17,7 @@ public:
 	IRenderer() = default;
 	virtual ~IRenderer() = default;
 
-	virtual void render(NodePtr node) = 0;
+	virtual void render(NodePtr node, double elapsedTime) = 0;
 	virtual void clearScreen() = 0;
 	virtual void init() = 0;
 	virtual void shutdown() = 0;

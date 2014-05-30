@@ -16,12 +16,12 @@ set(GLFW_BUILD_TESTS  OFF)
 set(GLFW_BUILD_DOCS OFF) 
 set(GLFW_INSTALL OFF)
 add_subdirectory(glfw)
-
+ 
 set(FOLDERS 
-        Technique 
-        Mesh
-        Graphics
-        Generator
+        Technique  
+        Mesh 
+        Graphics 
+        Generator 
 )
 
 set(SOURCE_DIRS ${CMAKE_CURRENT_SOURCE_DIR})

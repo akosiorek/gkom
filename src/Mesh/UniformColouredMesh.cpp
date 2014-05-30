@@ -11,17 +11,21 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-UniformColourMesh::UniformColourMesh(const std::vector<float>& geom, const std::vector<float>& colour,
+UniformColourMesh::UniformColourMesh(const std::vector<float>& geom, const std::vector<float>& normals, const std::vector<float>& colour,
 		const std::vector<unsigned>& indices, GLuint drawMode)
-	: IMesh(geom, colour, indices, drawMode) {
+	: IMesh(geom, normals, colour, indices, drawMode) {
 
 	GLuint geomVBO = Utils::genBuffer(GL_ARRAY_BUFFER, GL_STATIC_DRAW, geometry_);
+	GLuint normalVBO = Utils::genBuffer(GL_ARRAY_BUFFER, GL_STATIC_DRAW, normals_);
 
 	glGenVertexArrays (1, &vao_);
 	glBindVertexArray (vao_);
 	glEnableVertexAttribArray (0);
 	glBindBuffer (GL_ARRAY_BUFFER, geomVBO);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray (1);
+	glBindBuffer (GL_ARRAY_BUFFER, normalVBO);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 	viewUniform_ = glGetUniformLocation(MeshConfig::UNIFORM_COLOR_PROGRAM, MeshConfig::PERSPECTIVE_UNIFORM_NAME.c_str());
 	colourUniform_ = glGetUniformLocation(MeshConfig::UNIFORM_COLOR_PROGRAM, MeshConfig::COLOUR_UNIFORM_NAME.c_str());
@@ -43,6 +47,10 @@ void UniformColourMesh::setNormalTransform(const glm::mat3 normalTransform) {
 	glUseProgram(0);
 }
 
+void UniformColourMesh::setColours(const std::vector<float>& colours) {
+	colours_ = colours;
+}
+
 void UniformColourMesh::draw() {
 
 	glUseProgram(MeshConfig::UNIFORM_COLOR_PROGRAM);
@@ -50,18 +58,6 @@ void UniformColourMesh::draw() {
 	glBindVertexArray (vao_);
 	drawFunc_();
 	glUseProgram (0);
-}
-
-void UniformColourMesh::setNormals(const std::vector<float>& normals) {
-
-	IMesh::setNormals(normals);
-
-	GLuint normalVBO = Utils::genBuffer(GL_ARRAY_BUFFER, GL_STATIC_DRAW, normals_);
-
-	glBindVertexArray (vao_);
-	glEnableVertexAttribArray (1);
-	glBindBuffer (GL_ARRAY_BUFFER, normalVBO);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 }
 
 

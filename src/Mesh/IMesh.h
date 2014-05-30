@@ -19,22 +19,13 @@
 
 class IMesh {
 public:
-	IMesh(const std::vector<float>& geom, const std::vector<float>& colour,
+	IMesh(const std::vector<float>& geom, const std::vector<float>& normals, const std::vector<float>& colour,
 			const std::vector<unsigned>& indices, GLuint drawMode);
-
 
 	virtual ~IMesh() = default;
 
 	virtual void setView(const glm::mat4& view) = 0;
-	virtual void setNormalTransform(const glm::mat3 normalTransform) {};
 	virtual void draw() = 0;
-
-	virtual const std::vector<float>& getColours() const;
-	virtual void setColours(const std::vector<float>& colours);
-	virtual const std::vector<float>& getGeometry() const;
-	virtual void setGeometry(const std::vector<float>& geometry);
-	virtual const std::vector<float>& getNormals() const;
-	virtual void setNormals(const std::vector<float>& normals);
 
 protected:
 	std::vector<float> geometry_;

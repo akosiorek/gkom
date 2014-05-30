@@ -7,6 +7,7 @@
 
 #include "Node.h"
 #include "IMesh.h"
+#include "Trajectory.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -14,17 +15,22 @@ Node::Node(MeshPtr mesh)
 	: mesh_(mesh) {}
 
 
-void Node::draw(const glm::mat4& transform) {
+void Node::draw(const glm::mat4& transform, double elapsedTime) {
 
 	auto currentTransform = transform * transform_;
 //	auto currentNormalTransform = glm::transpose(glm::inverse(glm::mat3(currentTransform)));
+
+	for(auto trajectory : trajectories_) {
+		trajectory->update(elapsedTime);
+	}
+
 	if(mesh_) {
 		mesh_->setView(currentTransform);//, currentNormalMatrix);
 		mesh_->draw();
 	}
 
 	for(auto child : nodes_) {
-		child->draw(currentTransform);
+		child->draw(currentTransform, elapsedTime);
 	}
 }
 
@@ -68,4 +74,10 @@ void Node::addChild(NodePtr node) {
 
 auto Node::getChildren() -> NodeList& {
 	return nodes_;
+}
+
+void Node::addTrajectory(TrajectoryPtr trajectory) {
+
+	trajectory->setMovable(shared_from_this());
+	trajectories_.push_back(trajectory);
 }
