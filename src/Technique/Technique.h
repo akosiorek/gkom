@@ -16,30 +16,36 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "SkyboxTechnique.h"
-#include "Utils.h"
+#ifndef TECHNIQUE_H
+#define	TECHNIQUE_H
 
-#include <glm/gtc/type_ptr.hpp>
+#include <GL/glew.h>
 
-#include <limits>
 #include <string>
+#include <vector>
 
-SkyboxTechnique::SkyboxTechnique() {
+#define INVALID_UNIFORM_LOCATION 0xffffffff
 
-	shaderProg_ = Utils::createProgram({
-			Utils::loadShader(GL_VERTEX_SHADER, "skybox.vs"),
-			Utils::loadShader(GL_FRAGMENT_SHADER, "skybox.fs")
-	});
+class Technique {
+public:
+	Technique();
+	virtual ~Technique();
 
-	WVPLocation_ = getUniformLocation("gWVP");
-	textureLocation_ = getUniformLocation("gCubemapTexture");
-}
+	void enable();
 
-void SkyboxTechnique::setWVP(const glm::mat4& wvp) {
-	glUniformMatrix4fv(WVPLocation_, 1, GL_TRUE, glm::value_ptr(wvp));
-}
+protected:
+	GLint getUniformLocation(const std::string& pUniformName);
+	GLint getProgramParam(GLint param);
+	GLuint createProgram(const std::vector<GLuint> &shaderList);
+	GLuint loadShader(GLenum eShaderType, const std::string &strShaderFilename);
 
-void SkyboxTechnique::setTextureUnit(unsigned int textureUnit) {
-	glUniform1i(textureLocation_, textureUnit);
-}
+	GLuint shaderProg_;
+
+private:
+	GLuint createShader(GLenum shaderType, const std::string& strShaderFile);
+
+	static const std::string shaderPrefix_;
+};
+
+#endif	/* TECHNIQUE_H */
 

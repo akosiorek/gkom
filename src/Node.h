@@ -46,4 +46,6 @@ private:
 	glm::mat4 transform_;
 };
 
+typedef std::shared_ptr<Node> NodePtr;
+
 #endif /* NODE_H_ */

@@ -10,12 +10,12 @@
 
 #include "IMesh.h"
 
-class UniformColouredMesh : public IMesh {
+class UniformColourMesh : public IMesh {
 public:
-	UniformColouredMesh(const std::vector<float>& geom, const std::vector<float>& colour,
+	UniformColourMesh(const std::vector<float>& geom, const std::vector<float>& colour,
 			const std::vector<unsigned>& indices = std::vector<unsigned>(), GLuint drawMode = GL_TRIANGLES);
 
-	virtual ~UniformColouredMesh() = default;
+	virtual ~UniformColourMesh() = default;
 
 	virtual void setView(const glm::mat4& view) override;
 	virtual void setNormalTransform(const glm::mat3 normalTransform);

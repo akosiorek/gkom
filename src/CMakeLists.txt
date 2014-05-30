@@ -17,18 +17,33 @@ set(GLFW_BUILD_DOCS OFF)
 set(GLFW_INSTALL OFF)
 add_subdirectory(glfw)
 
+set(FOLDERS 
+        Technique 
+        Mesh
+        Graphics
+        Generator
+)
+
+set(SOURCE_DIRS ${CMAKE_CURRENT_SOURCE_DIR})
+foreach(folder ${FOLDERS})
+    set(SOURCE_DIRS ${SOURCE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/${folder})
+endforeach()
+
 include_directories( 
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${SOURCE_DIRS}
     ${OPENGL_INCLUDE_DIRS}  
     ${GLUT_INCLUDE_DIRS} 
-    glfw/include
+    glfw/include 
     ${GLM_INCLUDE_DIRS}
     ${GLEW_INCLUDE_DIRS}
     ${OpenCV_INCLUDE_DIRS}
 ) 
+foreach(source_dir ${SOURCE_DIRS})
+    file(GLOB files ${source_dir}/*.cpp)
+    list(APPEND SOURCES ${files})
+endforeach()
 
-file(GLOB SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+
 add_executable(gkom ${SOURCES}) 
 
 target_link_libraries(gkom 

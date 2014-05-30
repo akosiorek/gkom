@@ -16,28 +16,29 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TECHNIQUE_H
-#define	TECHNIQUE_H
+#include "SkyboxTechnique.h"
 
-#include <GL/glew.h>
+#include <glm/gtc/type_ptr.hpp>
 
+#include <limits>
 #include <string>
 
-#define INVALID_UNIFORM_LOCATION 0xffffffff
+SkyboxTechnique::SkyboxTechnique() {
 
-class Technique {
-public:
-	Technique();
-	virtual ~Technique();
+	shaderProg_ =createProgram({
+			loadShader(GL_VERTEX_SHADER, "skybox.vs"),
+			loadShader(GL_FRAGMENT_SHADER, "skybox.fs")
+	});
 
-	void enable();
+	WVPLocation_ = getUniformLocation("gWVP");
+	textureLocation_ = getUniformLocation("gCubemapTexture");
+}
 
-protected:
-	GLint getUniformLocation(const std::string& pUniformName);
-	GLint getProgramParam(GLint param);
+void SkyboxTechnique::setWVP(const glm::mat4& wvp) {
+	glUniformMatrix4fv(WVPLocation_, 1, GL_TRUE, glm::value_ptr(wvp));
+}
 
-	GLuint shaderProg_;
-};
-
-#endif	/* TECHNIQUE_H */
+void SkyboxTechnique::setTextureUnit(unsigned int textureUnit) {
+	glUniform1i(textureLocation_, textureUnit);
+}
 

@@ -8,15 +8,11 @@
 #ifndef IRENDERER_H_
 #define IRENDERER_H_
 
-#include <memory>
-
-class Node;
-class ICamera;
+#include "typedefs.h"
 
 class IRenderer {
 protected:
-	typedef std::shared_ptr<Node> NodePtr;
-	typedef std::shared_ptr<ICamera> CameraPtr;
+
 public:
 	IRenderer() = default;
 	virtual ~IRenderer() = default;

@@ -11,7 +11,7 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-UniformColouredMesh::UniformColouredMesh(const std::vector<float>& geom, const std::vector<float>& colour,
+UniformColourMesh::UniformColourMesh(const std::vector<float>& geom, const std::vector<float>& colour,
 		const std::vector<unsigned>& indices, GLuint drawMode)
 	: IMesh(geom, colour, indices, drawMode) {
 
@@ -29,21 +29,21 @@ UniformColouredMesh::UniformColouredMesh(const std::vector<float>& geom, const s
 
 }
 
-void UniformColouredMesh::setView(const glm::mat4& view) {
+void UniformColourMesh::setView(const glm::mat4& view) {
 
 	glUseProgram(MeshConfig::UNIFORM_COLOR_PROGRAM);
 	glUniformMatrix4fv(viewUniform_, 1, GL_FALSE, glm::value_ptr(view));
 	glUseProgram(0);
 }
 
-void UniformColouredMesh::setNormalTransform(const glm::mat3 normalTransform) {
+void UniformColourMesh::setNormalTransform(const glm::mat3 normalTransform) {
 
 	glUseProgram(MeshConfig::UNIFORM_COLOR_PROGRAM);
 	glUniformMatrix4fv(normalUniform_, 1, GL_FALSE, glm::value_ptr(normalTransform));
 	glUseProgram(0);
 }
 
-void UniformColouredMesh::draw() {
+void UniformColourMesh::draw() {
 
 	glUseProgram(MeshConfig::UNIFORM_COLOR_PROGRAM);
 	glUniform3f(colourUniform_, colours_[0], colours_[1],colours_[2]);
@@ -52,7 +52,7 @@ void UniformColouredMesh::draw() {
 	glUseProgram (0);
 }
 
-void UniformColouredMesh::setNormals(const std::vector<float>& normals) {
+void UniformColourMesh::setNormals(const std::vector<float>& normals) {
 
 	IMesh::setNormals(normals);
 

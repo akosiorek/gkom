@@ -18,13 +18,9 @@
 #include "Utils.h"
 #include "PlaneGenerator.h"
 
-#include <iostream>
-#include <memory>
+#include "typedefs.h"
 
-typedef std::unique_ptr<IRenderer> RendererPtr;
-typedef std::shared_ptr<IMesh> MeshPtr;
-typedef std::shared_ptr<Node> NodePtr;
-typedef std::shared_ptr<ICamera> CameraPtr;
+#include <iostream>
 
 
 int main(int argc, char** argv) {
@@ -76,13 +72,59 @@ int main(int argc, char** argv) {
 
 
 	planeGenerator->generate(100, 100, 80);
-	MeshPtr planeMesh = std::make_shared<UniformColouredMesh>(
+	MeshPtr floorMesh = std::make_shared<UniformColourMesh>(
 			planeGenerator->getVertices(),
 			colour,
 			planeGenerator->getIndices(),
 			GL_TRIANGLE_STRIP
 	);
-	planeMesh->setNormals(planeGenerator->getNormals());
+	floorMesh->setNormals(planeGenerator->getNormals());
+
+	//simple plane
+	std::vector<float> planeGeom = Utils::loadVertexData("plane.vert");
+	std::vector<unsigned> planeIndices;
+	for(int i = 0; i < planeGeom.size(); ++i) {
+		planeIndices.push_back(i);
+	}
+	std::cout << planeGeom.size() << std::endl;
+	std::vector<float> white = {1, 1, 1};
+
+	MeshPtr planeMesh = std::make_shared<UniformColourMesh>(
+			planeGeom,
+			white,
+			planeIndices
+	);
+	planeMesh->setNormals(Utils::loadVertexData("plane.norm"));
+
+
+
+	NodePtr boxNode = std::make_shared<Node>();
+	NodePtr upBoxNode = std::make_shared<Node>(planeMesh);
+	NodePtr rightBoxNode = std::make_shared<Node>(planeMesh);
+	NodePtr fronBoxNode = std::make_shared<Node>(planeMesh);
+	NodePtr downBoxNode = std::make_shared<Node>(planeMesh);
+	NodePtr leftBoxNode = std::make_shared<Node>(planeMesh);
+	NodePtr backBoxNode = std::make_shared<Node>(planeMesh);
+
+	upBoxNode->translate(0, 1);
+
+	rightBoxNode->translate(1);
+	rightBoxNode->rotate(Axis::Z, -90);
+	fronBoxNode->translate(0, 0, 1);
+	fronBoxNode->rotate(Axis::X, 90);
+	downBoxNode->translate(0, -1);
+	downBoxNode->rotate(Axis::Y, 180);
+	leftBoxNode->translate(-1);
+	leftBoxNode->rotate(Axis::Z, 90);
+	backBoxNode->translate(0, 0, -1);
+	backBoxNode->rotate(Axis::X, 90);
+//
+	boxNode->addChild(upBoxNode);
+	boxNode->addChild(rightBoxNode);
+	boxNode->addChild(fronBoxNode);
+	boxNode->addChild(downBoxNode);
+	boxNode->addChild(leftBoxNode);
+	boxNode->addChild(backBoxNode);
 
 
 // Rotating nodes
@@ -102,19 +144,19 @@ int main(int argc, char** argv) {
 	rotatingNode->addChild(centerNode);
 	rotatingNode->addChild(rightNode);
 
-//	Plane node
-	NodePtr planeNode = std::make_shared<Node>(planeMesh);
+//	Floor node
+	NodePtr floorNode = std::make_shared<Node>(floorMesh);
 
-	planeNode->translate(-50, 0, -50);
-//	planeNode->scale(3, 3, 3);
+	floorNode->translate(-50, -3, -50);
 
 //	Root node
 	NodePtr rootNode = std::make_shared<Node>();
-	rootNode->addChild(planeNode);
+	rootNode->addChild(floorNode);
 	rootNode->addChild(rotatingNode);
+	rotatingNode->addChild(boxNode);
 
 //	Ambient light
-	Utils::setAmbientLight(glm::vec4(3.f, 1.f, 1.f, 1.0f));
+	Utils::setAmbientLight(glm::vec4(1.f, 1.f, 1.f, 1.0f));
 
 
 //	Movement
