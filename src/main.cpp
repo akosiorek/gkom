@@ -52,8 +52,7 @@ int main(int argc, char** argv) {
 	});
 
 	MeshConfig::UNIFORM_COLOR_PROGRAM = Utils::createProgram({
-		Utils::loadShader(GL_VERTEX_SHADER, "unif_colour_matrix_vs.glsl"),
-//		Utils::loadShader(GL_VERTEX_SHADER, "light_vs.glsl"),
+		Utils::loadShader(GL_VERTEX_SHADER, "ambient_is_diffuse_vs.glsl"),
 		Utils::loadShader(GL_FRAGMENT_SHADER, "colours3_fs.glsl")
 	});
 
@@ -82,7 +81,6 @@ int main(int argc, char** argv) {
 			colour,
 			planeGenerator->getIndices(),
 			GL_TRIANGLE_STRIP
-//			planeGenerator->getNormals()
 	);
 	planeMesh->setNormals(planeGenerator->getNormals());
 
@@ -121,16 +119,11 @@ int main(int argc, char** argv) {
 
 //	Movement
 	float speed = 100.0f;
-	float rotated = .0f;
 
 
 	while(!renderer->shouldClose()) {
 
 		float shouldRotate = Utils::elapsedSinceLastFrame() * speed;
-//		rotated += shouldRotate;
-//		if(rotated >= 180.f || rotated <= -180.0f) {
-//			speed *= -1;
-//		}
 
 		rotatingNode->rotate(Axis::Z, shouldRotate);
 		rightNode->rotate(Axis::Z, -shouldRotate);

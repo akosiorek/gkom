@@ -60,6 +60,10 @@ void RendererOGL::init() {
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CW);
+
+	texturedSkybox_ = new TexturedSkybox("/home/adam/Desktop/ogldev-source/Content",
+			{"diffuse.jpg", "diffuse.jpg", "diffuse.jpg", "diffuse.jpg", "diffuse.jpg", "diffuse.jpg"});
+	skyboxTechnique_ = new SkyboxTechnique();
 }
 
 void RendererOGL::shutdown() {
@@ -72,6 +76,24 @@ void RendererOGL::clearScreen() {
 }
 
 void RendererOGL::render(NodePtr node) {
+
+    GLint OldCullFaceMode;
+    glGetIntegerv(GL_CULL_FACE_MODE, &OldCullFaceMode);
+    GLint OldDepthFuncMode;
+    glGetIntegerv(GL_DEPTH_FUNC, &OldDepthFuncMode);
+
+    glCullFace(GL_FRONT);
+    glDepthFunc(GL_LEQUAL);
+
+	skyboxTechnique_->enable();
+	skyboxTechnique_->setWVP(camera_->getTransform());
+	texturedSkybox_->bind(GL_TEXTURE0);
+
+    glCullFace(OldCullFaceMode);
+    glDepthFunc(OldDepthFuncMode);
+
+
+///////////////////////////////////////////////////////////
 
 	node->draw(camera_->getTransform());
 

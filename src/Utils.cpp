@@ -13,6 +13,7 @@
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
+#include <iostream>
 
 const std::string Utils::shaderPrefix_ = "../src/shaders/";
 const std::string Utils::dataPrefix_ = "../src/data/";
@@ -163,3 +164,10 @@ void Utils::setAmbientLight(const glm::vec4& light) {
 //			of << std::endl;
 //	}
 //}
+
+void Utils::throwRuntime(const std::string& msg) {
+
+	std::runtime_error er(msg);
+	std::cerr << er.what() << std::endl;
+	throw er;
+}

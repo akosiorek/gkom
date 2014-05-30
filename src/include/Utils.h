@@ -45,6 +45,8 @@ public:
 		}
 	}
 
+	static void throwRuntime(const std::string& msg);
+
 
 private:
 	static GLuint createShader(GLenum shaderType, const std::string& strShaderFile);

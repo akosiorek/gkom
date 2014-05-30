@@ -7,40 +7,34 @@ find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(GLM REQUIRED)
+find_package(OpenCV COMPONENTS core highgui REQUIRED)
 
 #	glfw
 set(BUILD_SHARED_LIBS ON)
 set(GLFW_BUILD_EXAMPLES OFF)
 set(GLFW_BUILD_TESTS  OFF)
-set(GLFW_BUILD_DOCS OFF)
+set(GLFW_BUILD_DOCS OFF) 
 set(GLFW_INSTALL OFF)
 add_subdirectory(glfw)
 
 include_directories( 
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${OPENGL_INCLUDE_DIRS}  
     ${GLUT_INCLUDE_DIRS} 
     glfw/include
     ${GLM_INCLUDE_DIRS}
     ${GLEW_INCLUDE_DIRS}
+    ${OpenCV_INCLUDE_DIRS}
 ) 
 
-add_executable(gkom 
-        main.cpp
-        ColouredVertMesh.cpp
-        Node.cpp
-        PerspectiveCamera.cpp
-        RendererOGL.cpp
-        Texture.cpp
-        Utils.cpp
-        MeshConfig.cpp
-        IMesh.cpp
-        UniformColouredMesh.cpp
-        PlaneGenerator.cpp
- )
+file(GLOB SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+add_executable(gkom ${SOURCES}) 
 
 target_link_libraries(gkom 
         glfw
         ${OPENGL_LIBRARIES}
         ${GLUT_LIBRARY}
         ${GLEW_LIBRARIES} 
-)
+        ${OpenCV_LIBS}
+) 

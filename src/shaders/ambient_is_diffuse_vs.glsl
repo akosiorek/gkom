@@ -9,13 +9,12 @@ uniform mat4 perspectiveMatrix;
 uniform mat3 normalMatrix;
 uniform vec3 baseColour;
 
-uniform vec3 dirToLight;
-uniform vec4 diffuseLightIntensity;
 uniform vec4 ambientLightIntensity;
 
 void main() {
 
-	gl_Position = perspectiveMatrix * position;		
+	gl_Position = perspectiveMatrix * position;	
+	
 	
 	vec3 normCamSpace = normalize(mat3(perspectiveMatrix) * normal);	
 	float cosAngIncidence = clamp(dot(normCamSpace, vec3(1.0, .5, .5)), 0, 1);	
