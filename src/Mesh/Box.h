@@ -2,7 +2,7 @@
  * Box.h
  *
  *  Created on: May 30, 2014
- *      Author: Adam Kosiorek
+ *      Author: Adam Kosiorek Kosiorek
  */
 
 #ifndef BOX_H_
@@ -12,10 +12,10 @@
 #include "typedefs.h"
 #include <vector>
 
-class Box: public Node {
+class Box : public Node {
 public:
-	Box(std::vector<float>& colour);
-	Box(std::vector<std::vector<float>>& colours);
+	Box(const std::vector<float>& colour);
+	Box(const std::vector<std::vector<float>>& colours);
 	virtual ~Box() = default;
 
 private:

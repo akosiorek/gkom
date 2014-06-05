@@ -2,7 +2,7 @@
  * PlaneGenerator.cpp
  *
  *  Created on: May 24, 2014
- *      Author: Adam Kosiorek
+ *      Author: Adam Kosiorek Kosiorek
  */
 
 #include "PlaneGenerator.h"

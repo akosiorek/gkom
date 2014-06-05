@@ -2,7 +2,7 @@
  * PlaneGenerator.h
  *
  *  Created on: May 24, 2014
- *      Author: Adam Kosiorek
+ *      Author: Adam Kosiorek Kosiorek
  */
 
 #ifndef PLANEGENERATOR_H_

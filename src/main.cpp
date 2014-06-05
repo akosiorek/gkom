@@ -19,6 +19,8 @@
 #include "NormalGenerator.h"
 #include "Box.h"
 #include "Trajectory.h"
+#include "PolyhedronGenerator.h"
+#include "SpaceShip.h"
 
 #include "typedefs.h"
 
@@ -36,7 +38,6 @@ void dumpVec(const std::vector<T>& vec, const std::string& logfile) {
 	}
 }
 
-
 std::vector<float> white = {1, 1, 1};
 std::vector<float> red = {1, 0, 0};
 std::vector<float> green = {0, 1, 0};
@@ -46,44 +47,6 @@ std::vector<float> black = {0, 0, 0};
 std::vector<float> gray = {0.3, 0.3, 0.3};
 
 
-NodePtr createSpaceShip() {
-
-	NodePtr shipNode = std::make_shared<Node>();
-
-	NodePtr corpus = std::make_shared<Box>(gray);
-	corpus->scale(1, 0.15, 0.25);
-
-
-	NodePtr rightWing = std::make_shared<Box>(gray);
-	rightWing->rotate(Axis::Y, 45);
-	rightWing->translate(-0.5);
-	rightWing->scale(0.6, 0.05, 0.1);
-
-
-	NodePtr leftWing = std::make_shared<Box>(gray);
-	leftWing->rotate(Axis::Y, 135);
-	leftWing->translate(0.5);
-	leftWing->scale(0.6, 0.05, 0.1);
-
-	shipNode->addChild(corpus);
-	shipNode->addChild(rightWing);
-	shipNode->addChild(leftWing);
-
-
-	TrajectoryPtr translate = std::make_shared<Trajectory>();
-	translate->addMove(-1, 3, MoveType::TransY);
-	translate->addMove(-1, 3, MoveType::TransZ);
-	translate->addMove(10, 20, MoveType::TransX);
-	shipNode->addTrajectory(translate);
-
-	TrajectoryPtr rotate = std::make_shared<Trajectory>();
-	rotate->addMove(15, 45, MoveType::RotY);
-	rotate->addMove(15, 45, MoveType::RotZ);
-	shipNode->addTrajectory(rotate);
-
-	return shipNode;
-}
-
 int main(int argc, char** argv) {
 
 	srand (time(NULL));
@@ -91,9 +54,11 @@ int main(int argc, char** argv) {
 //	Camera setup
 	CameraPtr camera = std::make_shared<PerspectiveCamera>();
 	camera->setClipping(0.5f, 100.f);
-	camera->translate(0, 30, 0);
-//	camera->pointAt(0, 0, 0);
-//	camera->rotate(Axis::X, -45);
+	// camera->rotate(Axis::Y, -135);
+	camera->translate(3, 10, -10);
+	// camera->pointAt(0, 0, 0);
+	// camera->rotate(Axis::X, -45);
+	// camera->rotate(Axis::, -45);
 
 //	Renderer setup
 	RendererPtr renderer(new RendererOGL());
@@ -131,8 +96,9 @@ int main(int argc, char** argv) {
 	floorNode->translate(-50, -3, -50);
 
 // Ship
-	NodePtr shipNode = createSpaceShip();
-	shipNode->translate(4);
+	// NodePtr shipNode = createSpaceShip();
+	auto shipNode = std::make_shared<SpaceShip>();
+	// shipNode->translate(4);
 	shipNode->rotate(Axis::Y, 90);
 
 //	Root node
@@ -145,7 +111,6 @@ int main(int argc, char** argv) {
 //	Ambient light
 	Utils::setAmbientLight(glm::vec4(.3f, .3f, 0.3f, 1.0f));
 
-
 //	Movement
 	float speed = 100.0f;
 
@@ -154,7 +119,7 @@ int main(int argc, char** argv) {
 		double elapsedTime = Utils::elapsedSinceLastFrame();
 		float shouldRotate = elapsedTime * speed;
 
-//		rotatingNode->rotate(Axis::Y, shouldRotate);
+		rotatingNode->rotate(Axis::Y, shouldRotate);
 		renderer->clearScreen();
 		renderer->render(rootNode, elapsedTime);
 	}

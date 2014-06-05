@@ -2,7 +2,7 @@
  * IMesh.h
  *
  *  Created on: May 24, 2014
- *      Author: Adam Kosiorek
+ *      Author: Adam Kosiorek Kosiorek
  */
 
 #ifndef IMESH_H_

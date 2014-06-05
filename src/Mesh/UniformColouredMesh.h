@@ -2,7 +2,7 @@
  * Mesh.h
  *
  *  Created on: 22 May 2014
- *      Author: adam
+ *      Author: Adam Kosiorek
  */
 
 #ifndef UniformColouredMesh_H_

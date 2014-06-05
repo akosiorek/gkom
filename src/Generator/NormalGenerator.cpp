@@ -2,7 +2,7 @@
  * NormalGenerator.cpp
  *
  *  Created on: May 30, 2014
- *      Author: Adam Kosiorek
+ *      Author: Adam Kosiorek Kosiorek
  */
 
 #include <NormalGenerator.h>

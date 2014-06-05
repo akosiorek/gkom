@@ -2,7 +2,7 @@
  * Trajectory.h
  *
  *  Created on: May 30, 2014
- *      Author: Adam Kosiorek
+ *      Author: Adam Kosiorek Kosiorek
  */
 
 #ifndef TRAJECTORY_H_

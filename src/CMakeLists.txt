@@ -21,8 +21,8 @@ set(FOLDERS
         Technique  
         Mesh 
         Graphics 
-        Generator 
-)
+        Generator  
+) 
 
 set(SOURCE_DIRS ${CMAKE_CURRENT_SOURCE_DIR})
 foreach(folder ${FOLDERS})
@@ -31,7 +31,7 @@ endforeach()
 
 include_directories( 
     ${SOURCE_DIRS}
-    ${OPENGL_INCLUDE_DIRS}  
+    ${OPENGL_INCLUDE_DIRS}   
     ${GLUT_INCLUDE_DIRS} 
     glfw/include 
     ${GLM_INCLUDE_DIRS}

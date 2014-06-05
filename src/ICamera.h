@@ -2,7 +2,7 @@
  * ICamera.h
  *
  *  Created on: 22 May 2014
- *      Author: adam
+ *      Author: Adam Kosiorek Kosiorek
  */
 
 #ifndef ICAMERA_H_

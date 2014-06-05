@@ -2,7 +2,7 @@
  * Utils.h
  *
  *  Created on: 22 May 2014
- *      Author: adam
+ *      Author: Adam Kosiorek
  */
 
 #ifndef UTILS_H_

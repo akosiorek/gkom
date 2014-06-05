@@ -2,7 +2,7 @@
  * PerspectiveCamera.h
  *
  *  Created on: 22 May 2014
- *      Author: adam
+ *      Author: Adam Kosiorek
  */
 
 #ifndef PERSPECTIVECAMERA_H_

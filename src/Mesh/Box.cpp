@@ -2,7 +2,7 @@
  * Box.cpp
  *
  *  Created on: May 30, 2014
- *      Author: Adam Kosiorek
+ *      Author: Adam Kosiorek Kosiorek
  */
 
 #include <Box.h>
@@ -10,7 +10,7 @@
 #include "Utils.h"
 #include "NormalGenerator.h"
 
-Box::Box(std::vector<float>& colour) {
+Box::Box(const std::vector<float>& colour) {
 
 	//simple plane
 	std::vector<float> planeGeom = Utils::loadVertexData("plane.vert");
@@ -25,7 +25,7 @@ Box::Box(std::vector<float>& colour) {
 	distribute();
 }
 
-Box::Box(std::vector<std::vector<float>>& colours) {
+Box::Box(const std::vector<std::vector<float>>& colours) {
 
 	//simple plane
 	std::vector<float> planeGeom = Utils::loadVertexData("plane.vert");
