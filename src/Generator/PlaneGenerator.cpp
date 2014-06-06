@@ -99,7 +99,6 @@ void PlaneGenerator::generate(int width, int height, int noise) {
 	vertices_ = genVertices(width, height, noise);
 	indices_ = genIndices(width, height);
 	normals_ = genNormals(width, height);
-	Utils::dumpVec(normals_, "normal.txt");
 }
 
 void PlaneGenerator::displace(int x, int y, float dx, float dy, float dz) {

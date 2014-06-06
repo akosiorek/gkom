@@ -76,7 +76,6 @@ int main(int argc, char** argv) {
 //	Mesh setup
 	std::unique_ptr<PlaneGenerator> planeGenerator(new PlaneGenerator());
 
-
 	planeGenerator->generate(100, 100, 80);
 	MeshPtr floorMesh = std::make_shared<UniformColourMesh>(
 			planeGenerator->getVertices(),

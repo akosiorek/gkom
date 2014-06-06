@@ -12,9 +12,7 @@
 
 class NormalGenerator {
 public:
-	NormalGenerator();
-	virtual ~NormalGenerator();
-
+	
 	static std::vector<float> gen(const std::vector<float>& vertices);
 };
 

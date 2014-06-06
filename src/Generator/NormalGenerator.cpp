@@ -9,15 +9,6 @@
 
 #include "glm/glm.hpp"
 
-NormalGenerator::NormalGenerator() {
-	// TODO Auto-generated constructor stub
-
-}
-
-NormalGenerator::~NormalGenerator() {
-	// TODO Auto-generated destructor stub
-}
-
 std::vector<float> NormalGenerator::gen(const std::vector<float>& vertices) {
 
 	std::vector<float> normals;
