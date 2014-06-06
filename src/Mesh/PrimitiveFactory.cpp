@@ -4,10 +4,12 @@
 #include "PolyhedronGenerator.h"
 #include "UniformColouredMesh.h"
 
-auto PrimitiveFactory::polyhedron(int vertices, float height, 
-	float upperLen, float lowerLen, const std::vector<float>& colour) -> NodePtr {
+auto PrimitiveFactory::polyhedron(int vertices, float height, float upperLen, float lowerLen,
+ const std::vector<float>& colour, float upperDent, float lowerDent) -> NodePtr {
 
-	auto data = PolyhedronGenerator::generate(vertices, height, upperLen, lowerLen);
+	auto data = PolyhedronGenerator::generate(vertices, height, upperLen,
+		lowerLen, upperDent, lowerDent);
+	
 	auto normals = NormalGenerator::gen(data);
 	auto mesh = std::make_shared<UniformColourMesh>(
 			data,

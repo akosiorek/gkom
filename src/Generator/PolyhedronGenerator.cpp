@@ -2,7 +2,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <cmath>
 
-std::vector<float> PolyhedronGenerator::generate(int numVertices, float height, float upperLength, float lowerLength) {
+std::vector<float> PolyhedronGenerator::generate(int numVertices, float height, float upperLength, 
+	float lowerLength, float upperDent, float lowerDent) {
 
 	std::vector<float> vertices;
 	//	There are 2 * size triangles so 6 * size vertices
@@ -15,8 +16,8 @@ std::vector<float> PolyhedronGenerator::generate(int numVertices, float height, 
 
 	triangulate(vertices, upperBase, lowerBase);
 	triangulate(vertices, lowerBase, upperBase, 1);	
-	genLid(vertices, upperBase);
-	genLid(vertices, lowerBase, true);
+	genLid(vertices, upperBase, upperDent);
+	genLid(vertices, lowerBase, lowerDent, true);
 
 	return vertices;
 }
@@ -102,9 +103,9 @@ void PolyhedronGenerator::pushVertex(std::vector<float>& vec, const glm::vec3 ve
 	vec.push_back(vert.z);
 }
 
-void PolyhedronGenerator::genLid(std::vector<float>& destVec, const VertVec& vertices, bool reverse) {
+void PolyhedronGenerator::genLid(std::vector<float>& destVec, const VertVec& vertices, float dent, bool reverse) {
 
-	float y = vertices[0].y;
+	float y = vertices[0].y - dent;
 	size_t last = vertices.size() - 1;
 	if(!reverse) {
 	for(int i = 0; i < last; ++i) {

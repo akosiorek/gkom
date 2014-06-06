@@ -9,7 +9,8 @@ class PolyhedronGenerator {
 public:
 	PolyhedronGenerator(/* args */) = default;
 
-	static std::vector<float> generate(int vert, float height, float upperLength, float lowerLength);
+	static std::vector<float> generate(int vert, float height, float upperLength,
+	 float lowerLength = .0f, float upperDent = .0f, float lowerDent = .0f);
 
 private:
 	static std::vector<glm::vec3> genarateBase(int vert, float edgeLength);
@@ -19,7 +20,7 @@ private:
 	static void rotateVertex(glm::vec3& vertex, float angle);
 	static void triangulate(std::vector<float> &destVec, const VertVec& vec1, const VertVec& vec2, int offset = 0);
 	static void pushVertex(std::vector<float>& vec, const glm::vec3 vert);
-	static void genLid(std::vector<float>& destVec, const VertVec& vertices, bool reverse = false);
+	static void genLid(std::vector<float>& destVec, const VertVec& vertices, float dent, bool reverse = false);
 };
 
 #endif // POLYHEDRON_GENERATOR_H

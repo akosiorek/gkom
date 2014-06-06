@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 project(gkom)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake_modules)
+set(BUILD_SHARED_LIBS ON)
 
 find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
@@ -10,7 +11,6 @@ find_package(GLM REQUIRED)
 find_package(OpenCV COMPONENTS core highgui REQUIRED)
 
 #	glfw
-set(BUILD_SHARED_LIBS ON)
 set(GLFW_BUILD_EXAMPLES OFF)
 set(GLFW_BUILD_TESTS  OFF)
 set(GLFW_BUILD_DOCS OFF) 
@@ -24,9 +24,16 @@ set(FOLDERS
         Generator  
 ) 
 
+#   Get absolute source folders paths
 set(SOURCE_DIRS ${CMAKE_CURRENT_SOURCE_DIR})
 foreach(folder ${FOLDERS})
     set(SOURCE_DIRS ${SOURCE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/${folder})
+endforeach()
+
+#   Get source files
+foreach(source_dir ${SOURCE_DIRS})
+    file(GLOB files ${source_dir}/*.cpp)
+    list(APPEND SOURCES ${files})
 endforeach()
 
 include_directories( 
@@ -38,10 +45,6 @@ include_directories(
     ${GLEW_INCLUDE_DIRS}
     ${OpenCV_INCLUDE_DIRS}
 ) 
-foreach(source_dir ${SOURCE_DIRS})
-    file(GLOB files ${source_dir}/*.cpp)
-    list(APPEND SOURCES ${files})
-endforeach()
 
 
 add_executable(gkom ${SOURCES}) 

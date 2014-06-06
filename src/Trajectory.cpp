@@ -10,7 +10,9 @@
 
 void Trajectory::update(double elapsedTime) {
 
-	if(!current_ || current_->did >= current_->max || current_->did <= -current_->max) {
+	if(!current_ 
+		|| current_->max != 0 
+		&& (current_->did >= current_->max || current_->did <= -current_->max)) {
 		if(moveQueue_.empty()) {
 			return;
 		} else {
