@@ -16,9 +16,6 @@
 
 #include "glm/glm.hpp"
 
-#include "TexturedSkybox.h"
-#include "SkyboxTechnique.h"
-
 class RendererOGL : public IRenderer {
 public:
 	RendererOGL(int width = 1024, int height = 768, std::string name = "OpenGL Renderer");
@@ -42,10 +39,6 @@ private:
 	CameraPtr camera_;
 	GLFWwindow* window_;
 	bool shouldClose_;
-
-
-	TexturedSkybox* texturedSkybox_;
-	SkyboxTechnique* skyboxTechnique_;
 };
 
 #endif /* RENDEREROGL_H_ */

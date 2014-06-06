@@ -6,17 +6,17 @@
  */
 
 #include <Box.h>
-#include "UniformColouredMesh.h"
+#include "BasicMesh.h"
 #include "Utils.h"
 #include "NormalGenerator.h"
 
-Box::Box(const std::vector<float>& colour) {
+Box::Box(const glm::vec3& colour) {
 
 	//simple plane
 	std::vector<float> planeGeom = Utils::loadVertexData("plane.vert");
 	auto planeNormals = NormalGenerator::gen(planeGeom);
 
-	auto mesh = std::make_shared<UniformColourMesh>(planeGeom, planeNormals, colour);
+	auto mesh = std::make_shared<BasicMesh>(planeGeom, planeNormals, colour);
 
 	for(int i = 0; i < 6; ++i) {
 		addChild(std::make_shared<Node>(mesh));
@@ -25,14 +25,14 @@ Box::Box(const std::vector<float>& colour) {
 	distribute();
 }
 
-Box::Box(const std::vector<std::vector<float>>& colours) {
+Box::Box(const std::vector<glm::vec3>& colours) {
 
 	//simple plane
 	std::vector<float> planeGeom = Utils::loadVertexData("plane.vert");
 	auto planeNormals = NormalGenerator::gen(planeGeom);
 
 	for(const auto& colour : colours) {
-		addChild(std::make_shared<Node>(std::make_shared<UniformColourMesh>(planeGeom, planeNormals, colour)));
+		addChild(std::make_shared<Node>(std::make_shared<BasicMesh>(planeGeom, planeNormals, colour)));
 	}
 
 	distribute();

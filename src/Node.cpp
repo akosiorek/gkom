@@ -20,9 +20,7 @@ void Node::draw(const glm::mat4& transform, double elapsedTime) {
 	auto currentTransform = transform * transform_;
 //	auto currentNormalTransform = glm::transpose(glm::inverse(glm::mat3(currentTransform)));
 
-	for(auto trajectory : trajectories_) {
-		trajectory->update(elapsedTime);
-	}
+	update(elapsedTime);
 
 	if(mesh_) {
 		mesh_->setView(currentTransform);//, currentNormalMatrix);
@@ -74,10 +72,4 @@ void Node::addChild(NodePtr node) {
 
 auto Node::getChildren() -> NodeList& {
 	return nodes_;
-}
-
-void Node::addTrajectory(TrajectoryPtr trajectory) {
-
-	trajectory->setMovable(shared_from_this());
-	trajectories_.push_back(trajectory);
 }

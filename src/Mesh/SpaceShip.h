@@ -3,18 +3,19 @@
 
 #include "Node.h"
 
+#include "glm/glm.hpp"
 #include <vector>
 
 class SpaceShip : public Node {
 public:
 	SpaceShip();
-	SpaceShip(const std::vector<std::vector<float>>& colours);
+	SpaceShip(const std::vector<glm::vec3>& colours);
 
 private:
-	void build(const std::vector<std::vector<float>>& colours);
-	NodePtr buildSide(const std::vector<std::vector<float>>& colours);
-	NodePtr buildCorpus(const std::vector<std::vector<float>>& colours);
-	NodePtr buildBridge(const std::vector<std::vector<float>>& colours);
+	void build(const std::vector<glm::vec3>& colours);
+	NodePtr buildSide(const std::vector<glm::vec3>& colours);
+	NodePtr buildCorpus(const std::vector<glm::vec3>& colours);
+	NodePtr buildBridge(const std::vector<glm::vec3>& colours);
 
 private:
 	const static float baseHeight_;

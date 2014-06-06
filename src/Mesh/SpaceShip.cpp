@@ -12,18 +12,16 @@ const float SpaceShip::bridgeBaseHeight_ = 1.f;
 
 SpaceShip::SpaceShip() {
 
-	std::vector<float> red = {1, 0.5, 0};
-	std::vector<float> blue = {0, 0.5, 1};
-	build(std::vector<std::vector<float>>({blue, red}));
-
+	glm::vec3 red(1, 0, 0);
+	glm::vec3 blue(0, 1, 0);
+	build({blue, red});
 }
 
-SpaceShip::SpaceShip(const std::vector<std::vector<float>>& colours) {
-
+SpaceShip::SpaceShip(const std::vector<glm::vec3>& colours) {
 	build(colours);
 }
 
-void SpaceShip::build(const std::vector<std::vector<float>>& colours) {
+void SpaceShip::build(const std::vector<glm::vec3>& colours) {
 
 	addChild(buildCorpus(colours));
 
@@ -37,7 +35,7 @@ void SpaceShip::build(const std::vector<std::vector<float>>& colours) {
 	addChild(left);
 }
 
-auto SpaceShip::buildSide(const std::vector<std::vector<float>>& colours) -> NodePtr {
+auto SpaceShip::buildSide(const std::vector<glm::vec3>& colours) -> NodePtr {
 
 	auto side = std::make_shared<Node>();
 
@@ -76,7 +74,7 @@ auto SpaceShip::buildSide(const std::vector<std::vector<float>>& colours) -> Nod
 	return side;
 }
 
-auto SpaceShip::buildBridge(const std::vector<std::vector<float>>& colours) -> NodePtr {
+auto SpaceShip::buildBridge(const std::vector<glm::vec3>& colours) -> NodePtr {
 
 	float relativeZ = .5f * bridgeBaseHeight_;
 	auto bridge = std::make_shared<Node>();
@@ -115,7 +113,7 @@ auto SpaceShip::buildBridge(const std::vector<std::vector<float>>& colours) -> N
 	return bridge;
 }
 
-auto SpaceShip::buildCorpus(const std::vector<std::vector<float>>& colours) -> NodePtr {
+auto SpaceShip::buildCorpus(const std::vector<glm::vec3>& colours) -> NodePtr {
 
 	auto corpus = std::make_shared<Node>();
 	auto base = PrimitiveFactory::cuboid(baseHeight_, 1.1, 2, colours[0]);

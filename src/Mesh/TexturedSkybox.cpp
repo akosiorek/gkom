@@ -19,7 +19,7 @@ static const GLenum types[6] = { GL_TEXTURE_CUBE_MAP_POSITIVE_X,
 		GL_TEXTURE_CUBE_MAP_NEGATIVE_Z };
 
 TexturedSkybox::TexturedSkybox(const std::string& dir,
-		std::vector<std::string> names) :
+		const std::vector<std::string>& names) :
 		dir_(dir), fileNames_(names), textureObj_(0) {
 }
 
@@ -35,11 +35,11 @@ bool TexturedSkybox::load() {
 	glBindTexture(GL_TEXTURE_CUBE_MAP, textureObj_);
 
 	for (unsigned int i = 0; i < 6; i++) {
-		std::cout << "../textures/skybox/posy.jpg" << std::endl;
-		cv::Mat texture = cv::imread("../textures/skybox/posy.jpg", CV_LOAD_IMAGE_COLOR);
+		cv::Mat texture = cv::imread(dir_ + "/" + fileNames_[i], CV_LOAD_IMAGE_COLOR);
 		if (!texture.data) {
-			throw std::runtime_error(
-					"Couldn't read: " + dir_ + "/" + fileNames_[i]);
+			std::runtime_error err("Couldn't read: " + dir_ + "/" + fileNames_[i]);
+			std::cout << err.what() << std::endl;
+			throw err;
 		}
 
 		glTexImage2D(types[i], 0, GL_RGB, texture.cols, texture.rows, 0,

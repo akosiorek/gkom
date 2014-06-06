@@ -5,15 +5,15 @@
  *      Author: Adam Kosiorek
  */
 
-#include "UniformColouredMesh.h"
+#include "BasicMesh.h"
 #include "Utils.h"
 #include "MeshConfig.h"
 
 #include <glm/gtc/type_ptr.hpp>
 
-UniformColourMesh::UniformColourMesh(const std::vector<float>& geom, const std::vector<float>& normals, const std::vector<float>& colour,
-		const std::vector<unsigned>& indices, GLuint drawMode)
-	: IMesh(geom, normals, colour, indices, drawMode) {
+BasicMesh::BasicMesh(const std::vector<float>& geom, const std::vector<float>& normals,
+		const glm::vec3& colour, GLuint drawMode)
+	: IMesh(geom, drawMode), normals_(normals), colour_(colour) {
 
 	GLuint geomVBO = Utils::genBuffer(GL_ARRAY_BUFFER, GL_STATIC_DRAW, geometry_);
 	GLuint normalVBO = Utils::genBuffer(GL_ARRAY_BUFFER, GL_STATIC_DRAW, normals_);
@@ -33,30 +33,30 @@ UniformColourMesh::UniformColourMesh(const std::vector<float>& geom, const std::
 
 }
 
-void UniformColourMesh::setView(const glm::mat4& view) {
+void BasicMesh::setView(const glm::mat4& view) {
 
 	glUseProgram(MeshConfig::UNIFORM_COLOR_PROGRAM);
 	glUniformMatrix4fv(viewUniform_, 1, GL_FALSE, glm::value_ptr(view));
 	glUseProgram(0);
 }
 
-void UniformColourMesh::setNormalTransform(const glm::mat3 normalTransform) {
+void BasicMesh::setNormalTransform(const glm::mat3 normalTransform) {
 
 	glUseProgram(MeshConfig::UNIFORM_COLOR_PROGRAM);
 	glUniformMatrix4fv(normalUniform_, 1, GL_FALSE, glm::value_ptr(normalTransform));
 	glUseProgram(0);
 }
 
-void UniformColourMesh::setColours(const std::vector<float>& colours) {
-	colours_ = colours;
+void BasicMesh::setColour(const glm::vec3& colour) {
+	colour_ = colour;
 }
 
-void UniformColourMesh::draw() {
+void BasicMesh::draw() {
 
 	glUseProgram(MeshConfig::UNIFORM_COLOR_PROGRAM);
-	glUniform3f(colourUniform_, colours_[0], colours_[1],colours_[2]);
+	glUniform3fv(colourUniform_, 1, glm::value_ptr(colour_));
 	glBindVertexArray (vao_);
-	drawFunc_();
+	glDrawArrays(GL_TRIANGLES, 0, geometry_.size());
 	glUseProgram (0);
 }
 

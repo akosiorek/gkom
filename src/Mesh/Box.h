@@ -8,14 +8,15 @@
 #ifndef BOX_H_
 #define BOX_H_
 
-#include <Node.h>
+#include "Node.h"
 #include "typedefs.h"
+#include "glm/glm.hpp"
 #include <vector>
 
 class Box : public Node {
 public:
-	Box(const std::vector<float>& colour);
-	Box(const std::vector<std::vector<float>>& colours);
+	Box(const glm::vec3& colour);
+	Box(const std::vector<glm::vec3>& colours);
 	virtual ~Box() = default;
 
 private:

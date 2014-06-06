@@ -25,7 +25,7 @@
 
 SkyboxTechnique::SkyboxTechnique() {
 
-	shaderProg_ =createProgram({
+	shaderProg_ = createProgram({
 			loadShader(GL_VERTEX_SHADER, "skybox.vs"),
 			loadShader(GL_FRAGMENT_SHADER, "skybox.fs")
 	});

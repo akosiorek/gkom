@@ -10,7 +10,7 @@ find_package(GLEW REQUIRED)
 find_package(GLM REQUIRED)
 find_package(OpenCV COMPONENTS core highgui REQUIRED)
 
-#	glfw
+#	glfw 
 set(GLFW_BUILD_EXAMPLES OFF)
 set(GLFW_BUILD_TESTS  OFF)
 set(GLFW_BUILD_DOCS OFF) 
@@ -18,10 +18,10 @@ set(GLFW_INSTALL OFF)
 add_subdirectory(glfw)
  
 set(FOLDERS 
-        Technique  
+        Technique   
         Mesh 
-        Graphics 
-        Generator  
+        Graphics    
+        Generator   
 ) 
 
 #   Get absolute source folders paths
@@ -31,7 +31,7 @@ foreach(folder ${FOLDERS})
 endforeach()
 
 #   Get source files
-foreach(source_dir ${SOURCE_DIRS})
+foreach(source_dir ${SOURCE_DIRS}) 
     file(GLOB files ${source_dir}/*.cpp)
     list(APPEND SOURCES ${files})
 endforeach()
