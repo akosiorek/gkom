@@ -61,8 +61,9 @@ void RendererOGL::init() {
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CW);
 
-	texturedSkybox_ = new TexturedSkybox("/home/adam/Desktop/ogldev-source/Content",
+	texturedSkybox_ = new TexturedSkybox("/home/adam/Desktop/ogldev-source/Content/",
 			{"diffuse.jpg", "diffuse.jpg", "diffuse.jpg", "diffuse.jpg", "diffuse.jpg", "diffuse.jpg"});
+	texturedSkybox_->load();
 	skyboxTechnique_ = new SkyboxTechnique();
 }
 

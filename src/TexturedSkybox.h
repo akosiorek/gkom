@@ -25,7 +25,7 @@ public:
 	/**
 	 * names = {+x, -x, +y, -z, +z, -z}
 	 */
-	TexturedSkybox(const std::string& dir, const std::vector<std::string>& names);
+	TexturedSkybox(const std::string& dir, std::vector<std::string> names);
 	virtual ~TexturedSkybox();
 
     bool load();
@@ -34,7 +34,7 @@ public:
 private:
 
     const std::string& dir_;
-    const std::vector<std::string>& fileNames_;
+    const std::vector<std::string> fileNames_;
     GLuint textureObj_;
 };
 
