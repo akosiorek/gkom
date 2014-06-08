@@ -6,9 +6,7 @@
  */
 
 #include "TexturedSkybox.h"
-
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
+#include "Utils.h"
 
 #include <stdexcept>
 #include <iostream>
@@ -35,7 +33,7 @@ bool TexturedSkybox::load() {
 	glBindTexture(GL_TEXTURE_CUBE_MAP, textureObj_);
 
 	for (unsigned int i = 0; i < 6; i++) {
-		cv::Mat texture = cv::imread(dir_ + "/" + fileNames_[i], CV_LOAD_IMAGE_COLOR);
+		cv::Mat texture = Utils::loadImage(dir_ + "/" + fileNames_[i]);
 		if (!texture.data) {
 			std::runtime_error err("Couldn't read: " + dir_ + "/" + fileNames_[i]);
 			std::cout << err.what() << std::endl;

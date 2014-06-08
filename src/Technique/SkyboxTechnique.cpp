@@ -17,11 +17,7 @@
  */
 
 #include "SkyboxTechnique.h"
-
 #include <glm/gtc/type_ptr.hpp>
-
-#include <limits>
-#include <string>
 
 SkyboxTechnique::SkyboxTechnique() {
 
@@ -35,7 +31,7 @@ SkyboxTechnique::SkyboxTechnique() {
 }
 
 void SkyboxTechnique::setWVP(const glm::mat4& wvp) {
-	glUniformMatrix4fv(WVPLocation_, 1, GL_TRUE, glm::value_ptr(wvp));
+	glUniformMatrix4fv(WVPLocation_, 1, GL_FALSE, glm::value_ptr(wvp));
 }
 
 void SkyboxTechnique::setTextureUnit(unsigned int textureUnit) {

@@ -27,6 +27,7 @@ public:
 
 	void addTrajectory(TrajectoryPtr trajectory);
 	void update(double elapsedTime);
+	void removeTrajectory(TrajectoryPtr trajectory);
 
 private:
 	TrajectoryList trajectories_;

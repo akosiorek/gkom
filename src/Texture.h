@@ -5,12 +5,12 @@
  *      Author: Adam Kosiorek
  */
 
+ #include <opencv2/core/core.hpp>
+
 #ifndef TEXTURE_H_
 #define TEXTURE_H_
 
 #include <string>
-
-#include <opencv2/core/core.hpp>
 #include <GL/glew.h>
 
 class Texture {

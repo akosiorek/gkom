@@ -21,22 +21,22 @@ public:
 
 
 	const std::vector<unsigned>& getIndices() const;
-	void setIndices(const std::vector<unsigned>& indices);
 	const std::vector<float>& getVertices() const;
-	void setVertices(const std::vector<float>& vertices);
 	const std::vector<float>& getNormals() const;
-	void setNormals(const std::vector<float>& normals);
+	const std::vector<float>& getTextureCoords() const;
 
 private:
-	std::vector<unsigned> genIndices(int width, int height) const ;
+	std::vector<unsigned> genIndices(int width, int height) const;
 	std::vector<float> genVertices(int width, int height, int noise = 0) const;
 	std::vector<float> genNormals(int width, int height) const;
 	glm::vec3 getVert(unsigned v) const;
+	std::vector<float> genTextureCoords(int width, int height) const;
 
 
 	std::vector<float> vertices_;
 	std::vector<unsigned> indices_;
 	std::vector<float> normals_;
+	std::vector<float> textureCoords_;
 };
 
 #endif /* PLANEGENERATOR_H_ */

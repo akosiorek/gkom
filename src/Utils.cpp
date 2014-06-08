@@ -7,8 +7,11 @@
 
 #include "Utils.h"
 #include "MeshConfig.h"
+#include "Logger.h"
 
 #include <glm/gtc/type_ptr.hpp>
+
+ #include <opencv2/imgproc/imgproc.hpp>
 
 #include <fstream>
 #include <sstream>
@@ -17,6 +20,7 @@
 
 const std::string Utils::shaderPrefix_ = "../src/shaders/";
 const std::string Utils::dataPrefix_ = "../src/data/";
+glm::vec3 Utils::diffuseLightDir_ = glm::vec3(1.0f, 1.0f, 1.0f);
 
 GLuint Utils::createShader(GLenum shaderType, const std::string &strShaderFile) {
 
@@ -140,34 +144,50 @@ double Utils::elapsedSinceLastFrame() {
 	return elapsed;
 }
 
-void Utils::setAmbientLight(const glm::vec4& light) {
+void Utils::setAmbientLightIntensity(const glm::vec4& light) {
 
 	glUseProgram(MeshConfig::UNIFORM_COLOR_PROGRAM);
 	glUniform4fv(
 			glGetUniformLocation(MeshConfig::UNIFORM_COLOR_PROGRAM, MeshConfig::AMBIENT_LIGHT_UNIFORM_NAME.c_str()),
 			1, glm::value_ptr(light));
-//	glUniform3f(
-//			glGetUniformLocation(MeshConfig::UNIFORM_COLOR_PROGRAM, MeshConfig::AMBIENT_LIGHT_UNIFORM_NAME.c_str()),
-//			light.x, light.y, light.z);
 	glUseProgram(0);
 
 }
 
-//
-//template<typename T>
-//void Utils::dumpVec(const std::vector<T>& vec, const std::string& logfile) {
-//
-//	std::ofstream of(logfile);
-//	for(int i = 0; i < vec.size(); ++i) {
-//		of << vec[i] << " ";
-//		if(i % 100 == 0)
-//			of << std::endl;
-//	}
-//}
+void Utils::setDiffuseLightIntensity(const glm::vec4& light) {
 
-void Utils::throwRuntime(const std::string& msg) {
+	glUseProgram(MeshConfig::UNIFORM_COLOR_PROGRAM);
+	glUniform4fv(
+			glGetUniformLocation(MeshConfig::UNIFORM_COLOR_PROGRAM, MeshConfig::DIFFUSE_LIGHT_UNIFORM_NAME.c_str()),
+			1, glm::value_ptr(light));
+	glUseProgram(0);
 
-	std::runtime_error er(msg);
-	std::cerr << er.what() << std::endl;
-	throw er;
+}
+
+void Utils::setDiffuseLightDir(const glm::vec3& light) {
+
+	diffuseLightDir_ = light;
+	glUseProgram(MeshConfig::UNIFORM_COLOR_PROGRAM);
+	glUniform3fv(
+			glGetUniformLocation(MeshConfig::UNIFORM_COLOR_PROGRAM, MeshConfig::LIGHT_DIR_UNIFORM_NAME.c_str()),
+			1, glm::value_ptr(diffuseLightDir_));
+	glUseProgram(0);
+
+}
+
+glm::vec3 Utils::getDiffuseLightDir() {
+	return diffuseLightDir_;
+}
+
+cv::Mat Utils::loadImage(const std::string& filename) {
+
+	cv::Mat mat = cv::imread(filename, CV_LOAD_IMAGE_COLOR);
+	if(!mat.data) {
+		RUNTIME_ERR("Couldn't load image: " + filename);
+	}
+
+	//	Convert to [0, 1] float and RGBA
+	cv::cvtColor(mat, mat, CV_BGR2RGBA, 4);
+	// mat.convertTo(mat, CV_32F, 1/255.f);
+	return mat;
 }

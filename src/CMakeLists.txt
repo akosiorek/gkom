@@ -8,7 +8,7 @@ find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(GLM REQUIRED)
-find_package(OpenCV COMPONENTS core highgui REQUIRED)
+find_package(OpenCV COMPONENTS core highgui imgproc REQUIRED)
 
 #	glfw 
 set(GLFW_BUILD_EXAMPLES OFF)
@@ -22,13 +22,13 @@ set(FOLDERS
         Mesh 
         Graphics    
         Generator   
-) 
+)  
 
 #   Get absolute source folders paths
 set(SOURCE_DIRS ${CMAKE_CURRENT_SOURCE_DIR})
 foreach(folder ${FOLDERS})
     set(SOURCE_DIRS ${SOURCE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/${folder})
-endforeach()
+endforeach() 
 
 #   Get source files
 foreach(source_dir ${SOURCE_DIRS}) 
@@ -46,13 +46,24 @@ include_directories(
     ${OpenCV_INCLUDE_DIRS}
 ) 
 
-
 add_executable(gkom ${SOURCES}) 
-
+  
 target_link_libraries(gkom 
-        glfw
+        glfw 
         ${OPENGL_LIBRARIES}
         ${GLUT_LIBRARY}
-        ${GLEW_LIBRARIES} 
-        ${OpenCV_LIBS}
-) 
+        ${GLEW_LIBRARIES}  
+        ${OpenCV_LIBS} 
+)
+
+
+file(GLOB tut_sources TextureTut/*.cpp)
+add_executable(tut ${tut_sources} Movable.cpp Trajectory.cpp Generator/NormalGenerator.cpp Texture.cpp Utils.cpp Mesh/MeshConfig.cpp Node.cpp RendererOGL.cpp PerspectiveCamera.cpp) 
+  
+target_link_libraries(tut
+        glfw 
+        ${OPENGL_LIBRARIES}
+        ${GLUT_LIBRARY}
+        ${GLEW_LIBRARIES}  
+        ${OpenCV_LIBS} 
+)

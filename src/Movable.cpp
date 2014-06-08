@@ -13,3 +13,8 @@ void Movable::update(double elapsedTime) {
 		trajectory->update(elapsedTime);
 	}
 }
+
+void Movable::removeTrajectory(TrajectoryPtr trajectory) {
+
+	trajectories_.remove(trajectory);
+}

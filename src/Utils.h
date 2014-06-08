@@ -14,9 +14,14 @@
 
 #include "glm/glm.hpp"
 
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+
 #include <vector>
 #include <string>
 #include <fstream>
+#include <iostream>
+#include <stdexcept>
 
 class Utils {
 public:
@@ -32,7 +37,11 @@ public:
 	static std::string loadFile(const std::string& filepath);
 	static GLuint genBuffer(GLenum bufferType, GLenum drawType, const std::vector<float>& data);
 	static double elapsedSinceLastFrame();
-	static void setAmbientLight(const glm::vec4& light);
+	static void setAmbientLightIntensity(const glm::vec4& light);
+	static void setDiffuseLightIntensity(const glm::vec4& light);
+	static void setDiffuseLightDir(const glm::vec3& light);
+	static glm::vec3 getDiffuseLightDir();
+	static cv::Mat loadImage(const std::string& filename);
 
 	template<typename T>
 	static void dumpVec(const std::vector<T>& vec, const std::string& logfile) {
@@ -45,14 +54,12 @@ public:
 		}
 	}
 
-	static void throwRuntime(const std::string& msg);
-
-
 private:
 	static GLuint createShader(GLenum shaderType, const std::string& strShaderFile);
 
 	static const std::string shaderPrefix_;
 	static const std::string dataPrefix_;
+	static glm::vec3 diffuseLightDir_;
 };
 
 #endif /* UTILS_H_ */

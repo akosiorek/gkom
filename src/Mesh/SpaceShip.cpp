@@ -150,3 +150,15 @@ auto SpaceShip::buildCorpus(const std::vector<glm::vec3>& colours) -> NodePtr {
 	
 	return corpus;
 }
+
+auto SpaceShip::shoot() -> NodePtr {
+
+	auto missile = PrimitiveFactory::polyhedron(22, 10, 0.08, 0.08, glm::vec3(2.0f, 204/255.0f, 0));
+	missile->setTransform(glm::mat4(getTransform()));
+	missile->rotate(Axis::X, 90);
+	auto trajectory = std::make_shared<Trajectory>();
+	trajectory->addMove(500, 1000, MoveType::TransY);
+	// trajectory->addMove(0, 0, MoveType::Kill);
+	missile->addTrajectory(trajectory);
+	return missile;
+}

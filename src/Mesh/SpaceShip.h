@@ -11,6 +11,8 @@ public:
 	SpaceShip();
 	SpaceShip(const std::vector<glm::vec3>& colours);
 
+	NodePtr shoot();
+
 private:
 	void build(const std::vector<glm::vec3>& colours);
 	NodePtr buildSide(const std::vector<glm::vec3>& colours);

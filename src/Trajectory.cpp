@@ -7,6 +7,7 @@
 
 #include <Trajectory.h>
 #include "Movable.h"
+ #include "Logger.h"
 
 void Trajectory::update(double elapsedTime) {
 
@@ -39,6 +40,10 @@ void Trajectory::move(MoveType type, float extent) {
 	case MoveType::RotX: movable_->rotate(Axis::X, extent); break;
 	case MoveType::RotY: movable_->rotate(Axis::Y, extent); break;
 	case MoveType::RotZ: movable_->rotate(Axis::Z, extent); break;
+	case MoveType::Wait: break;
+	case MoveType::Kill: movable_->removeTrajectory(shared_from_this()); break;
+	
+	default: INVALID_ARG("No such move type");
 	}
 }
 

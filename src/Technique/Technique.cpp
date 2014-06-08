@@ -18,6 +18,7 @@
 
 #include "Technique.h"
 #include "Utils.h"
+#include "Logger.h"
 
 #define GLCheckError() (glGetError() == GL_NO_ERROR)
 
@@ -41,7 +42,7 @@ GLint Technique::getUniformLocation(const std::string& pUniformName) {
 	GLuint Location = glGetUniformLocation(shaderProg_, pUniformName.c_str());
 
 	if (Location == INVALID_UNIFORM_LOCATION) {
-		Utils::throwRuntime("Unable to get the location of uniform " + pUniformName);
+		RUNTIME_ERR("Unable to get the location of uniform " + pUniformName);
 	}
 
 	return Location;

@@ -9,7 +9,6 @@
 #include "Utils.h"
 #include <ctime>
 #include <cstdlib>
-#include <iostream>
 
 std::vector<float> PlaneGenerator::genVertices(int width, int height, int noise) const {
 
@@ -74,7 +73,7 @@ std::vector<float> PlaneGenerator::genNormals(int width, int height) const {
 
 		ind[0] = ind[1];
 		ind[1] = ind[2];
-		if(ind[2] % 100 == 99 && ind[2] > 100 && *it < (width * height - 1)) {
+		if(ind[2] % height == (height - 1) && ind[2] > height && *it < (width * height - 1)) {
 			++(++(++it));
 		}
 		ind[2] = *it++;
@@ -95,10 +94,27 @@ std::vector<float> PlaneGenerator::genNormals(int width, int height) const {
 	return normals;
 }
 
+std::vector<float> PlaneGenerator::genTextureCoords(int width, int height) const {
+
+	std::vector<float> textureCoords;
+	textureCoords.reserve(width * height * 2);
+
+
+	for (int row = 0; row < height; row++) {
+		for (int col = 0; col < width; col++) {
+		 textureCoords.push_back(float(col) / width);
+		 textureCoords.push_back(float(row) / height);
+		}
+	}
+	return textureCoords;
+}
+
 void PlaneGenerator::generate(int width, int height, int noise) {
 	vertices_ = genVertices(width, height, noise);
 	indices_ = genIndices(width, height);
 	normals_ = genNormals(width, height);
+	textureCoords_ = genTextureCoords(width, height);
+	Utils::dumpVec(textureCoords_, "texCoords.log");
 }
 
 void PlaneGenerator::displace(int x, int y, float dx, float dy, float dz) {
@@ -109,22 +125,14 @@ const std::vector<unsigned>& PlaneGenerator::getIndices() const {
 	return indices_;
 }
 
-void PlaneGenerator::setIndices(const std::vector<unsigned>& indices) {
-	indices_ = indices;
-}
-
 const std::vector<float>& PlaneGenerator::getVertices() const {
 	return vertices_;
-}
-
-void PlaneGenerator::setVertices(const std::vector<float>& vertices) {
-	vertices_ = vertices;
 }
 
 const std::vector<float>& PlaneGenerator::getNormals() const {
 	return normals_;
 }
 
-void PlaneGenerator::setNormals(const std::vector<float>& normals) {
-	normals_ = normals;
+const std::vector<float>& PlaneGenerator::getTextureCoords() const {
+	return textureCoords_;
 }

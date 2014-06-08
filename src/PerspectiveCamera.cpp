@@ -51,7 +51,9 @@ void PerspectiveCamera::updateTransform() const {
 }
 
 void PerspectiveCamera::translate(float x, float y, float z) {
-	position_ += glm::vec3(x, y, -z);
+	// position_ += glm::vec3(x, y, -z);
+	// target_ += glm::vec3(x, y, -z);
+	model_ = glm::translate(model_, glm::vec3(-x, -y, -z));
 	updateView();
 
 }

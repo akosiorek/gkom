@@ -73,6 +73,10 @@ void RendererOGL::clearScreen() {
 
 void RendererOGL::render(NodePtr node, double elapsedTime) {
 
+	// Utils::setDiffuseLightDir(
+	// 	glm::mat3(camera_->getTransform()) * Utils::getDiffuseLightDir());
+
+
 	node->draw(camera_->getTransform(), elapsedTime);
 
 	glfwSwapBuffers(window_);

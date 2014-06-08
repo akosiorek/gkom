@@ -17,7 +17,7 @@ void main() {
 
 	gl_Position = perspectiveMatrix * position;		
 	
-	vec3 normCamSpace = normalize(mat3(perspectiveMatrix) * normal);	
-	float cosAngIncidence = clamp(dot(normCamSpace, vec3(1.0, .5, .5)), 0, 1);	
-	theColor = (ambientLightIntensity + ambientLightIntensity * cosAngIncidence) * vec4(baseColour, 1.0);
+	vec3 normCamSpace = normalize(mat3(perspectiveMatrix) * normal);		
+	float cosAngIncidence = clamp(dot(normCamSpace, dirToLight), 0, 1);	
+	theColor = (ambientLightIntensity + diffuseLightIntensity * cosAngIncidence) * vec4(baseColour, 1.0);
 }

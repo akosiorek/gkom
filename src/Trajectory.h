@@ -10,6 +10,7 @@
 
 #include "typedefs.h"
 #include <list>
+#include <memory>
 
 enum class MoveType {
 	TransX,
@@ -17,10 +18,12 @@ enum class MoveType {
 	TransZ,
 	RotX,
 	RotY,
-	RotZ
+	RotZ,
+	Wait,
+	Kill
 };
 
-class Trajectory {
+class Trajectory : public std::enable_shared_from_this<Trajectory> {
 public:
 	Trajectory() = default;
 	virtual ~Trajectory() = default;

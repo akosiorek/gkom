@@ -6,6 +6,7 @@
  */
 
 #include "Texture.h"
+#include "Logger.h"
 #include "Utils.h"
 
 #include <opencv2/highgui/highgui.hpp>
@@ -15,10 +16,7 @@ Texture::Texture(GLenum textureTarget, const std::string& fileName)
 
 void Texture::load() {
 
-	mat_ = cv::imread(filename_, 1);
-	if(!mat_.data) {
-		Utils::throwRuntime("Couldn't load image: " + filename_);
-	}
+	mat_ = Utils::loadImage(filename_);
 
 	glGenTextures(1, &textureObj_);
 	glBindTexture(textureTarget_, textureObj_);

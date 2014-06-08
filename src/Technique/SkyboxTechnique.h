@@ -19,7 +19,6 @@
 #define	SKYBOX_TECHNIQUE_H
 
 #include "Technique.h"
-
 #include "glm/glm.hpp"
 
 class SkyboxTechnique: public Technique {
